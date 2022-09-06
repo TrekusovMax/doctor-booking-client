@@ -6,8 +6,9 @@ import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
 import RemoveRedEyeRoundedIcon from '@mui/icons-material/RemoveRedEyeRounded'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 export default function Header() {
+  const navigate = useNavigate()
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static">
@@ -22,6 +23,12 @@ export default function Header() {
             </Link>
           </Typography>
 
+          <Button onClick={() => navigate('/list')} color="inherit">
+            Список пациентов
+          </Button>
+          <Button onClick={() => navigate('/users')} color="inherit">
+            Список пользователей
+          </Button>
           <Button color="inherit">Войти</Button>
         </Toolbar>
       </AppBar>
