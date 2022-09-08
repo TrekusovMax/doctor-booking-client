@@ -7,6 +7,7 @@ import { Routes, Route } from 'react-router-dom'
 import PatientList from './components/patientList/PatientList'
 import PatientInfo from './components/patientList/PatientInfo'
 import UsersList from './components/userList/UsersList'
+import SheduleList from './components/shedule/SheduleList'
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
           <Route path="/list" element={<PatientList />} />
           <Route path="/list/:id" element={<PatientInfo />} />
           <Route path="/users" element={<UsersList />} />
+          <Route path="/shedule" element={<SheduleList />} />
         </Routes>
       </Box>
     </Container>

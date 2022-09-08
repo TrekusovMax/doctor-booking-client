@@ -23,6 +23,9 @@ export default function Header() {
             </Link>
           </Typography>
 
+          <Button onClick={() => navigate('/shedule')} color="inherit">
+            Расписание
+          </Button>
           <Button onClick={() => navigate('/list')} color="inherit">
             Список пациентов
           </Button>
