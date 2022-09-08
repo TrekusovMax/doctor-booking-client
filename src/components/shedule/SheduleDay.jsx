@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import {
   Typography,
   Stack,
@@ -22,25 +22,26 @@ const Item = styled(Paper)(({ theme }) => ({
   color: theme.palette.text.secondary,
 }))
 
-const SheduleDay = ({ day }) => {
-  const [shedule, setShedule] = useState({})
-
+const SheduleDay = ({ day, setShedule, shedule }) => {
   const [checked, setChecked] = useState(true)
-  const [hoursStart, setHoursStart] = useState(0)
+  const [hoursStart, setHoursStart] = useState(8)
   const [minutesStart, setMinutesStart] = useState(0)
-  const [hoursEnd, setHoursEnd] = useState(0)
+  const [hoursEnd, setHoursEnd] = useState(8)
   const [minutesEnd, setMinutesEnd] = useState(0)
-  const [receiptTime, setReceiptTime] = useState(0)
-  const [days, setDays] = useState(Settings.days)
+  const [receiptTime, setReceiptTime] = useState(5)
+
+  const switchRef = useRef()
 
   const handleDayChange = (event) => {
     setChecked(event.target.checked)
+    console.log(day)
+    //console.log(switchRef.current.children[1].textContent)
   }
   const handleChange = (event) => {
-    //setShedule((prev) => console.log([...prev]) /* , { [event.target.name]: event.target.value } */)
-
-    shedule[event.target.name] = event.target.value
-    setShedule(shedule)
+    //shedule[event.target.name] = event.target.value
+    console.log(shedule)
+    //setShedule()
+    //shedule.map((item) => /* Object.keys(item)[0] === day */ console.log(item[day]))
 
     switch (event.target.name) {
       case 'hoursStart':
@@ -60,7 +61,6 @@ const SheduleDay = ({ day }) => {
         break
     }
   }
-
   return (
     <Stack
       direction="row"
@@ -69,12 +69,15 @@ const SheduleDay = ({ day }) => {
       spacing={2}
       sx={{
         height: '75px',
-
         marginX: 'auto',
       }}>
-      <FormGroup>
+      <FormGroup
+        sx={{
+          minWidth: '175px',
+        }}>
         <FormControlLabel
           labelPlacement="start"
+          ref={switchRef}
           control={
             <Switch
               checked={checked}
@@ -133,7 +136,7 @@ const SheduleDay = ({ day }) => {
       <BasicSelect
         label={'Минут'}
         onChange={handleChange}
-        data={Settings.minutesEnd}
+        data={[5, 10, 15, 20, 25, 30]}
         name={'receiptTime'}
         time={receiptTime}
         disabled={!checked}
@@ -141,5 +144,4 @@ const SheduleDay = ({ day }) => {
     </Stack>
   )
 }
-
 export default SheduleDay

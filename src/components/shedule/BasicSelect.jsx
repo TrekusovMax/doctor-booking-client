@@ -13,10 +13,10 @@ export default function BasicSelect({ label, data, name, onChange, time, disable
 
   return (
     <FormControl fullWidth disabled={disabled}>
-      <InputLabel id="demo-simple-select-label">{label}</InputLabel>
+      <InputLabel id={name}>{label}</InputLabel>
       <Select
-        labelId="demo-simple-select-label"
-        id="demo-simple-select"
+        labelId={name}
+        id={`${name}-select`}
         name={name}
         value={time}
         label={label}
