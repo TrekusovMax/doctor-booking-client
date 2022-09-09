@@ -13,7 +13,13 @@ export default function Header() {
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static">
         <Toolbar className="flex justify-between">
-          <IconButton size="large" edge="start" color="inherit" aria-label="menu" sx={{ mr: 2 }}>
+          <IconButton
+            size="large"
+            edge="start"
+            color="inherit"
+            aria-label="menu"
+            sx={{ mr: 2 }}
+          >
             <RemoveRedEyeRoundedIcon />
           </IconButton>
 
@@ -32,7 +38,9 @@ export default function Header() {
           <Button onClick={() => navigate('/users')} color="inherit">
             Список пользователей
           </Button>
-          <Button color="inherit">Войти</Button>
+          <Button onClick={() => navigate('/login')} color="inherit">
+            Войти
+          </Button>
         </Toolbar>
       </AppBar>
     </Box>

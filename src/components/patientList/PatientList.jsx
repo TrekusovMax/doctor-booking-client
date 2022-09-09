@@ -35,7 +35,7 @@ const PatientList = () => {
     <Box
       sx={{
         height: '100vh',
-        width: '75%',
+        width: '80%',
         marginX: 'auto',
         '& .pending': {
           backgroundColor: '#f0e68c',
@@ -49,7 +49,8 @@ const PatientList = () => {
         '& .MuiDataGrid-columnSeparator': {
           display: 'none',
         },
-      }}>
+      }}
+    >
       <Typography variant="h3" sx={{ my: 2 }} component="h2">
         Список пациентов
       </Typography>
@@ -70,7 +71,11 @@ const PatientList = () => {
           getCellClassName={getCellClassName}
         />
         <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
-          <Alert onClose={handleClose} severity="success" sx={{ width: '100%' }}>
+          <Alert
+            onClose={handleClose}
+            severity="success"
+            sx={{ width: '100%' }}
+          >
             Данные пациента изменнены
           </Alert>
         </Snackbar>
