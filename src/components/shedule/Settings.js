@@ -19,10 +19,8 @@ export const Settings = {
   minutesEnd,
   days,
 }
-export let initState = days.map((d) => ({
+export const initState = days.map((d) => ({
   [d]: {
-    date_from: '',
-    date_to: '',
     enabled: true,
     hoursStart: hoursStart[0],
     hoursEnd: hoursEnd[0],

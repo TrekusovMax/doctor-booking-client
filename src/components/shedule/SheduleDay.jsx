@@ -22,7 +22,7 @@ const Item = styled(Paper)(({ theme }) => ({
   color: theme.palette.text.secondary,
 }))
 
-const SheduleDay = ({ day, setShedule, shedule }) => {
+const SheduleDay = ({ day, setShedule }) => {
   const [checked, setChecked] = useState(true)
   const [hoursStart, setHoursStart] = useState(8)
   const [minutesStart, setMinutesStart] = useState(0)
