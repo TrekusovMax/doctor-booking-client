@@ -34,16 +34,27 @@ const SheduleDay = ({ day, setShedule, shedule }) => {
 
   const handleDayChange = (event) => {
     setChecked(event.target.checked)
-    console.log(day)
-    //console.log(switchRef.current.children[1].textContent)
+
+    setShedule((prev) =>
+      prev.map((item) =>
+        Object.keys(item)[0] === day
+          ? { [`${day}`]: { ...item[day], ['enabled']: event.target.checked } }
+          : item,
+      ),
+    )
   }
   const handleChange = (event) => {
-    //shedule[event.target.name] = event.target.value
-    console.log(shedule)
-    //setShedule()
-    //shedule.map((item) => /* Object.keys(item)[0] === day */ console.log(item[day]))
+    const elem = event.target.name
 
-    switch (event.target.name) {
+    setShedule((prev) =>
+      prev.map((item) =>
+        Object.keys(item)[0] === day
+          ? { [`${day}`]: { ...item[day], [`${elem}`]: event.target.value } }
+          : item,
+      ),
+    )
+
+    switch (elem) {
       case 'hoursStart':
         setHoursStart(event.target.value)
         break
