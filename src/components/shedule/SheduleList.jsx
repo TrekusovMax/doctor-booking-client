@@ -55,11 +55,11 @@ const SheduleList = () => {
           <Typography variant="body1" sx={{ my: 2 }} component="h2">
             C
           </Typography>
-          <DateInput setActualDays={setActualDays} name="date_from" />
+          <DateInput actualDays={actualDays} setActualDays={setActualDays} name="date_from" />
           <Typography variant="body1" sx={{ my: 2 }} component="h2">
             По
           </Typography>
-          <DateInput setActualDays={setActualDays} name="date_to" />
+          <DateInput actualDays={actualDays} setActualDays={setActualDays} name="date_to" />
         </Stack>
         <Stack
           sx={{ my: 3 }}
