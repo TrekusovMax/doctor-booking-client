@@ -2,8 +2,6 @@ import React, { useRef, useState } from 'react'
 import {
   Typography,
   Stack,
-  Paper,
-  styled,
   FormGroup,
   Switch,
   FormControlLabel,
@@ -11,16 +9,6 @@ import {
 } from '@mui/material'
 import { Settings } from './Settings'
 import BasicSelect from './BasicSelect'
-
-const Item = styled(Paper)(({ theme }) => ({
-  backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
-  ...theme.typography.body2,
-  padding: theme.spacing(1),
-  textAlign: 'center',
-  justifyContent: 'space-between',
-
-  color: theme.palette.text.secondary,
-}))
 
 const SheduleDay = ({ day, setShedule }) => {
   const [checked, setChecked] = useState(true)
@@ -38,7 +26,7 @@ const SheduleDay = ({ day, setShedule }) => {
     setShedule((prev) =>
       prev.map((item) =>
         Object.keys(item)[0] === day
-          ? { [`${day}`]: { ...item[day], ['enabled']: event.target.checked } }
+          ? { [`${day}`]: { ...item[day], enabled: event.target.checked } }
           : item,
       ),
     )
@@ -70,6 +58,8 @@ const SheduleDay = ({ day, setShedule }) => {
       case 'receiptTime':
         setReceiptTime(event.target.value)
         break
+      default:
+        break
     }
   }
   return (
@@ -81,11 +71,13 @@ const SheduleDay = ({ day, setShedule }) => {
       sx={{
         height: '75px',
         marginX: 'auto',
-      }}>
+      }}
+    >
       <FormGroup
         sx={{
           minWidth: '175px',
-        }}>
+        }}
+      >
         <FormControlLabel
           labelPlacement="start"
           ref={switchRef}

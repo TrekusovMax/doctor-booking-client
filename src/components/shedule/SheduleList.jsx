@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 
 import SheduleDay from './SheduleDay'
 import { Settings, initState } from './Settings'
@@ -13,14 +13,14 @@ const SheduleList = () => {
     date_from: '',
     date_to: '',
   })
-
+  /* 
   useEffect(() => {
-    console.log(actualDays)
+    //console.log(actualDays)
   }, [actualDays])
 
   useEffect(() => {
-    //console.log(shedule)
-  }, [shedule])
+    //  console.log(shedule)
+  }, [shedule]) */
 
   return (
     <Box
@@ -40,18 +40,25 @@ const SheduleList = () => {
         '& .MuiDataGrid-columnSeparator': {
           display: 'none',
         },
-      }}>
+      }}
+    >
       <Typography variant="h3" sx={{ my: 2 }} component="h2">
         Расписание приёма
       </Typography>
 
-      <Stack sx={{ my: 1, ml: 4 }} direction="row" spacing={3} justifyContent={'space-between'}>
+      <Stack
+        sx={{ my: 1, ml: 4 }}
+        direction="row"
+        spacing={3}
+        justifyContent={'space-between'}
+      >
         <Stack
           sx={{ my: 3, ml: 4 }}
           direction="row"
           spacing={3}
           justifyContent={'start'}
-          alignItems={'center'}>
+          alignItems={'center'}
+        >
           <Typography variant="body1" sx={{ my: 2 }} component="h2">
             C
           </Typography>
@@ -66,7 +73,8 @@ const SheduleList = () => {
           direction="row"
           spacing={3}
           justifyContent={'end'}
-          alignItems={'center'}>
+          alignItems={'center'}
+        >
           <Button color="success" variant="contained" autoFocus>
             Сохранить
           </Button>

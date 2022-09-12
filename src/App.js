@@ -8,6 +8,7 @@ import PatientList from './components/patientList/PatientList'
 import PatientInfo from './components/patientList/PatientInfo'
 import UsersList from './components/userList/UsersList'
 import SheduleList from './components/shedule/SheduleList'
+import { Login } from './components/login/Login'
 
 function App() {
   return (
@@ -16,13 +17,15 @@ function App() {
       <Box
         sx={{
           marginTop: '20px',
-        }}>
+        }}
+      >
         <Routes>
           <Route path="/" element={<Calendar />} />
           <Route path="/list" element={<PatientList />} />
           <Route path="/list/:id" element={<PatientInfo />} />
           <Route path="/users" element={<UsersList />} />
           <Route path="/shedule" element={<SheduleList />} />
+          <Route path="/login" element={<Login />} />
         </Routes>
       </Box>
     </Container>
@@ -30,4 +33,3 @@ function App() {
 }
 
 export default App
-
