@@ -5,14 +5,23 @@ import { Settings, initState } from './Settings'
 import { Box, Typography, Stack, Button, Paper } from '@mui/material'
 
 import DateInput from './DateInput'
+import { useNavigate } from 'react-router-dom'
 
 const SheduleList = () => {
+  const navigate = useNavigate()
   const { days } = Settings
   const [shedule, setShedule] = useState(initState)
   const [actualDays, setActualDays] = useState({
     date_from: '',
     date_to: '',
   })
+
+  const handleSave = () => {
+    console.log(Object.assign(actualDays, shedule))
+  }
+  const handleBack = () => {
+    navigate('/')
+  }
   /* 
   useEffect(() => {
     //console.log(actualDays)
@@ -40,25 +49,18 @@ const SheduleList = () => {
         '& .MuiDataGrid-columnSeparator': {
           display: 'none',
         },
-      }}
-    >
+      }}>
       <Typography variant="h3" sx={{ my: 2 }} component="h2">
         Расписание приёма
       </Typography>
 
-      <Stack
-        sx={{ my: 1, ml: 4 }}
-        direction="row"
-        spacing={3}
-        justifyContent={'space-between'}
-      >
+      <Stack sx={{ my: 1, ml: 4 }} direction="row" spacing={3} justifyContent={'space-between'}>
         <Stack
           sx={{ my: 3, ml: 4 }}
           direction="row"
           spacing={3}
           justifyContent={'start'}
-          alignItems={'center'}
-        >
+          alignItems={'center'}>
           <Typography variant="body1" sx={{ my: 2 }} component="h2">
             C
           </Typography>
@@ -73,12 +75,11 @@ const SheduleList = () => {
           direction="row"
           spacing={3}
           justifyContent={'end'}
-          alignItems={'center'}
-        >
-          <Button color="success" variant="contained" autoFocus>
+          alignItems={'center'}>
+          <Button color="success" onClick={handleSave} variant="contained" autoFocus>
             Сохранить
           </Button>
-          <Button color="error" variant="contained">
+          <Button color="error" onClick={handleBack} variant="contained">
             Отмена
           </Button>
         </Stack>
