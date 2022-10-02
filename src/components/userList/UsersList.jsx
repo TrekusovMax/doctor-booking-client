@@ -5,7 +5,6 @@ import { DataGrid, ruRU } from '@mui/x-data-grid'
 import Snackbar from '@mui/material/Snackbar'
 import Alert from '@mui/material/Alert'
 import {
-  Box,
   Typography,
   Paper,
   Button,
@@ -18,7 +17,6 @@ import StyledBox from './StyledBox'
 import Dialog from '@mui/material/Dialog'
 import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
-import DialogContentText from '@mui/material/DialogContentText'
 import DialogTitle from '@mui/material/DialogTitle'
 
 export default function UsersList() {
@@ -34,6 +32,10 @@ export default function UsersList() {
   const handleDialogClose = () => {
     setDialogOpen(false)
   }
+  const handleCreateNewUser = (event) => {
+    console.log(event.target)
+  }
+
   const handleAddNewUser = () => {
     setDialogOpen(true)
   }
@@ -126,7 +128,12 @@ export default function UsersList() {
         Список сотрудников
       </Typography>
       <StyledBox sx={{ marginX: 'auto' }}>
-        <Button onClick={handleAddNewUser} sx={{ marginY: 2 }} color="primary" variant="contained">
+        <Button
+          onClick={handleAddNewUser}
+          sx={{ marginY: 2 }}
+          color="primary"
+          variant="contained"
+        >
           Добавить
         </Button>
         <Paper elevation={3}>
@@ -151,7 +158,11 @@ export default function UsersList() {
           />
         </Paper>
         <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
-          <Alert onClose={handleClose} severity="success" sx={{ width: '100%' }}>
+          <Alert
+            onClose={handleClose}
+            severity="success"
+            sx={{ width: '100%' }}
+          >
             Данные пользователя изменнены
           </Alert>
         </Snackbar>
@@ -161,17 +172,22 @@ export default function UsersList() {
         open={dialogOpen}
         onClose={handleDialogClose}
         aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description">
-        <DialogTitle id="alert-dialog-title">{'Добавление нового сотрудника'}</DialogTitle>
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {'Добавление нового сотрудника'}
+        </DialogTitle>
         <DialogContent>
           <TextField
             autoFocus
             margin="dense"
             id="name"
+            name="name"
             label="ФИО"
             type="text"
             fullWidth
             variant="standard"
+            helperText="ФИО не должно быть пустым!"
           />
           <TextField
             autoFocus
@@ -192,12 +208,23 @@ export default function UsersList() {
             variant="standard"
           />
           <FormControlLabel
-            control={<Checkbox checked={admin} onChange={handleIsAdmin} name="isAdmin" />}
+            control={
+              <Checkbox
+                checked={admin}
+                onChange={handleIsAdmin}
+                name="isAdmin"
+              />
+            }
             label="Администратор?"
           />
         </DialogContent>
         <DialogActions>
-          <Button color="primary" variant="contained" onClick={handleDialogClose} autoFocus>
+          <Button
+            color="primary"
+            variant="contained"
+            onClick={handleCreateNewUser}
+            autoFocus
+          >
             Создать
           </Button>
           <Button color="error" variant="contained" onClick={handleDialogClose}>
