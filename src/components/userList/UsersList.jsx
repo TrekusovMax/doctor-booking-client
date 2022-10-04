@@ -4,41 +4,44 @@ import GetTableSetting from './TableSettings'
 import { DataGrid, ruRU } from '@mui/x-data-grid'
 import Snackbar from '@mui/material/Snackbar'
 import Alert from '@mui/material/Alert'
-import {
-  Box,
-  Typography,
-  Paper,
-  Button,
-  TextField,
-  Checkbox,
-  FormControlLabel,
-} from '@mui/material'
+import { Typography, Paper, Button, TextField, Checkbox, FormControlLabel } from '@mui/material'
 import StyledBox from './StyledBox'
 
 import Dialog from '@mui/material/Dialog'
 import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
-import DialogContentText from '@mui/material/DialogContentText'
 import DialogTitle from '@mui/material/DialogTitle'
+import OpenDialog from './OpenDialog'
 
 export default function UsersList() {
   const { rows } = GetTableSetting()
   const [pageSize, setPageSize] = useState(20)
   const [tableData, setTableData] = useState(rows)
   const [open, setOpen] = useState(false)
-  const [admin, setAdmin] = useState(false)
+  const [login, setLogin] = useState('')
+  const [password, setPassword] = useState('')
+  const [name, setName] = useState('')
+  const [isAdmin, setIsAdmin] = useState(false)
+
   const [dialogOpen, setDialogOpen] = useState(false)
   const handleDialogOpen = () => {
-    let isBoss = window.confirm('Ты здесь главный?')
+    let confirmDelete = window.confirm('Подтверждаете удаление?')
   }
   const handleDialogClose = () => {
     setDialogOpen(false)
   }
+  const handleCreateNewUser = () => {
+    const data = {
+      name,
+      login,
+      password,
+      isAdmin,
+    }
+    console.log(data)
+  }
+
   const handleAddNewUser = () => {
     setDialogOpen(true)
-  }
-  const handleIsAdmin = (event) => {
-    setAdmin(event.target.checked)
   }
 
   const columns = [
@@ -120,6 +123,18 @@ export default function UsersList() {
     setOpen(true)
     return newRow
   }
+  /* useEffect(() => {
+    console.log('name', name)
+  }, [name])
+  useEffect(() => {
+    console.log('login', login)
+  }, [login])
+  useEffect(() => {
+    console.log('password', password)
+  }, [password])
+  useEffect(() => {
+    console.log('isAdmin', isAdmin)
+  }, [isAdmin]) */
   return (
     <>
       <Typography variant="h3" align="center" sx={{ my: 2 }} component="h2">
@@ -156,22 +171,36 @@ export default function UsersList() {
           </Alert>
         </Snackbar>
       </StyledBox>
+      <OpenDialog
+        dialogOpen={dialogOpen}
+        handleDialogClose={handleDialogClose}
+        setLogin={setLogin}
+        setPassword={setPassword}
+        setName={setName}
+        setIsAdmin={setIsAdmin}
+        handleCreateNewUser={handleCreateNewUser}
+      />
 
-      <Dialog
+      {/* <Dialog
         open={dialogOpen}
         onClose={handleDialogClose}
         aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description">
-        <DialogTitle id="alert-dialog-title">{'Добавление нового сотрудника'}</DialogTitle>
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {'Добавление нового сотрудника'}
+        </DialogTitle>
         <DialogContent>
           <TextField
             autoFocus
             margin="dense"
             id="name"
+            name="name"
             label="ФИО"
             type="text"
             fullWidth
             variant="standard"
+            helperText="ФИО не должно быть пустым!"
           />
           <TextField
             autoFocus
@@ -192,19 +221,30 @@ export default function UsersList() {
             variant="standard"
           />
           <FormControlLabel
-            control={<Checkbox checked={admin} onChange={handleIsAdmin} name="isAdmin" />}
+            control={
+              <Checkbox
+                checked={admin}
+                onChange={handleIsAdmin}
+                name="isAdmin"
+              />
+            }
             label="Администратор?"
           />
         </DialogContent>
         <DialogActions>
-          <Button color="primary" variant="contained" onClick={handleDialogClose} autoFocus>
+          <Button
+            color="primary"
+            variant="contained"
+            onClick={handleCreateNewUser}
+            autoFocus
+          >
             Создать
           </Button>
           <Button color="error" variant="contained" onClick={handleDialogClose}>
             Отмена
           </Button>
         </DialogActions>
-      </Dialog>
+      </Dialog> */}
     </>
   )
 }

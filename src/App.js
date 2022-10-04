@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import Header from './components/Header'
 import Container from '@mui/material/Container'
 import Calendar from './components/calendar/IndexCalendar'
@@ -9,8 +9,14 @@ import PatientInfo from './components/patientList/PatientInfo'
 import UsersList from './components/userList/UsersList'
 import SheduleList from './components/shedule/SheduleList'
 import { Login } from './components/login/Login'
+import { useDispatch } from 'react-redux'
+import { loadUsersList } from './store/users'
 
 function App() {
+  const dispatch = useDispatch()
+  useEffect(() => {
+    dispatch(loadUsersList())
+  }, [])
   return (
     <Container maxWidth="">
       <Header />

@@ -11,12 +11,13 @@ export const Login = () => {
     formState: { errors, isValid },
   } = useForm({
     defaultValues: {
-      email: 'test@test.ru',
+      login: 'admin',
       password: '12345',
     },
   })
 
-  const onSubmit = async (values) => {
+  const onSubmit = (values) => {
+    alert(JSON.stringify(values))
     /* const data = await dispatch(fetchAuth(values))
     if (!data.payload) {
       return alert('Не удалось авторизоваться!')
@@ -34,19 +35,20 @@ export const Login = () => {
       <form onSubmit={handleSubmit(onSubmit)}>
         <TextField
           className={styles.field}
-          label="E-Mail"
-          //error={Boolean(errors.email?.message)}
-          //helperText={errors.email?.message}
-          {...register('email', { required: 'Укажите почту' })}
+          label="Логин"
+          name="login"
+          error={Boolean(errors.login)}
+          helperText={errors.login ? 'Укажите логин' : ''}
+          {...register('login', { required: 'Укажите логин' })}
           fullWidth
-          type="email"
         />
+
         <TextField
           className={styles.field}
           label="Пароль"
           fullWidth
-          //error={Boolean(errors.password?.message)}
-          //helperText={errors.password?.message}
+          error={Boolean(errors.password)}
+          helperText={errors.password ? 'Укажите пароль' : ''}
           {...register('password', { required: 'Укажите пароль' })}
           type="password"
         />

@@ -1,40 +1,96 @@
-import React, { useState } from 'react'
-import Button from '@mui/material/Button'
+import React, { useState, useTransition } from 'react'
+
 import Dialog from '@mui/material/Dialog'
 import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
-import DialogContentText from '@mui/material/DialogContentText'
 import DialogTitle from '@mui/material/DialogTitle'
+import { Button, TextField, Checkbox, FormControlLabel } from '@mui/material'
 
-const OpenDialog = ({ isOpen }) => {
-  const [open, setOpen] = useState(false)
-  console.log(isOpen)
-  const handleClickOpen = () => {
-    setOpen(true)
+const OpenDialog = ({
+  dialogOpen,
+  handleDialogClose,
+  setLogin,
+  setPassword,
+  setName,
+  setIsAdmin,
+  handleCreateNewUser,
+}) => {
+  const [admin, setAdmin] = useState(false)
+  const [isPending, startTransition] = useTransition()
+  const handleChangeName = (event) => {
+    startTransition(() => {
+      setName(event.target.value)
+    })
   }
-
-  const handleClose = () => {
-    setOpen(false)
+  const handleChangePassword = (event) => {
+    startTransition(() => {
+      setPassword(event.target.value)
+    })
+  }
+  const handleChangeLogin = (event) => {
+    startTransition(() => {
+      setLogin(event.target.value)
+    })
+  }
+  const handleChangeIsAdmin = () => {
+    setAdmin((prev) => !prev)
+    setIsAdmin(!admin)
   }
 
   return (
     <div>
       <Dialog
-        open={open}
-        onClose={handleClose}
+        open={dialogOpen}
+        onClose={handleDialogClose}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description">
-        <DialogTitle id="alert-dialog-title">{"Use Google's location service?"}</DialogTitle>
+        <DialogTitle id="alert-dialog-title">{'Добавление нового сотрудника'}</DialogTitle>
         <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            Let Google help apps determine location. This means sending anonymous location data to
-            Google, even when no apps are running.
-          </DialogContentText>
+          <TextField
+            autoFocus
+            margin="dense"
+            id="name"
+            name="name"
+            label="ФИО"
+            type="text"
+            fullWidth
+            variant="standard"
+            helperText="ФИО не должно быть пустым!"
+            onChange={handleChangeName}
+          />
+          <TextField
+            autoFocus
+            margin="dense"
+            id="login"
+            name="login"
+            label="Логин"
+            type="text"
+            fullWidth
+            variant="standard"
+            onChange={handleChangeLogin}
+          />
+          <TextField
+            autoFocus
+            margin="dense"
+            id="password"
+            name="password"
+            label="Пароль"
+            type="password"
+            fullWidth
+            variant="standard"
+            onChange={handleChangePassword}
+          />
+          <FormControlLabel
+            control={<Checkbox checked={admin} name="isAdmin" onChange={handleChangeIsAdmin} />}
+            label="Администратор?"
+          />
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose}>Disagree</Button>
-          <Button onClick={handleClose} autoFocus>
-            Agree
+          <Button color="primary" variant="contained" onClick={handleCreateNewUser} autoFocus>
+            Создать
+          </Button>
+          <Button color="error" variant="contained" onClick={handleDialogClose}>
+            Отмена
           </Button>
         </DialogActions>
       </Dialog>
