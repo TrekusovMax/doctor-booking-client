@@ -42,6 +42,15 @@ const {
   authRequestFailed,
 } = actions
 
+const authRequested = createAction('users/authRequested')
+const userCreateRequested = createAction('users/userCreateRequested')
+
+function createUser(payload) {
+  return async function(dispatch) {
+    dispatch(userCreateRequested())
+  }
+}
+
 export const loadUsersList = () => async (dispatch, getState) => {
   dispatch(usersRequested())
   try {
@@ -52,13 +61,16 @@ export const loadUsersList = () => async (dispatch, getState) => {
   }
 }
 
-const authRequested = createAction('users/authRequested')
-export const signUp = ({ login, password, name }) => async (dispatch) => {
+export const signUp = ({ login, password, name, isAdmin }) => async (
+  dispatch,
+) => {
   dispatch(authRequested())
   try {
-    const data = await authService.register({ login, password, name })
+    const data = await authService.register({ login, password, name, isAdmin })
+    console.log('tokens', data)
     localStorageService.setTokens(data)
     dispatch(authRequestSuccess({ userId: data.localId }))
+    dispatch(createUser())
   } catch (error) {
     dispatch(authRequestFailed(error.message))
   }

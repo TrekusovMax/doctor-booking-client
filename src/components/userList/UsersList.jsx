@@ -4,7 +4,14 @@ import GetTableSetting from './TableSettings'
 import { DataGrid, ruRU } from '@mui/x-data-grid'
 import Snackbar from '@mui/material/Snackbar'
 import Alert from '@mui/material/Alert'
-import { Typography, Paper, Button, TextField, Checkbox, FormControlLabel } from '@mui/material'
+import {
+  Typography,
+  Paper,
+  Button,
+  TextField,
+  Checkbox,
+  FormControlLabel,
+} from '@mui/material'
 import StyledBox from './StyledBox'
 
 import Dialog from '@mui/material/Dialog'
@@ -12,8 +19,11 @@ import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
 import DialogTitle from '@mui/material/DialogTitle'
 import OpenDialog from './OpenDialog'
+import { useDispatch } from 'react-redux'
+import { signUp } from '../../store/users'
 
 export default function UsersList() {
+  const dispatch = useDispatch()
   const { rows } = GetTableSetting()
   const [pageSize, setPageSize] = useState(20)
   const [tableData, setTableData] = useState(rows)
@@ -37,7 +47,7 @@ export default function UsersList() {
       password,
       isAdmin,
     }
-    console.log(data)
+    dispatch(signUp(data))
   }
 
   const handleAddNewUser = () => {
@@ -141,7 +151,12 @@ export default function UsersList() {
         Список сотрудников
       </Typography>
       <StyledBox sx={{ marginX: 'auto' }}>
-        <Button onClick={handleAddNewUser} sx={{ marginY: 2 }} color="primary" variant="contained">
+        <Button
+          onClick={handleAddNewUser}
+          sx={{ marginY: 2 }}
+          color="primary"
+          variant="contained"
+        >
           Добавить
         </Button>
         <Paper elevation={3}>
@@ -166,7 +181,11 @@ export default function UsersList() {
           />
         </Paper>
         <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
-          <Alert onClose={handleClose} severity="success" sx={{ width: '100%' }}>
+          <Alert
+            onClose={handleClose}
+            severity="success"
+            sx={{ width: '100%' }}
+          >
             Данные пользователя изменнены
           </Alert>
         </Snackbar>
