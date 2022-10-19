@@ -1,11 +1,38 @@
 import axios from 'axios'
 import config from '../config.json'
+import authService from './auth.service'
+import localStorageService from './localStorage.service'
 
 const http = axios.create({
   baseURL: config.apiEndpoint,
 })
 
-axios.interceptors.response.use(
+http.interceptors.request.use(
+  async function(config) {
+    const expiresDate = localStorageService.getTokenExpiresDate()
+    const refreshToken = localStorageService.getRefreshToken()
+    const isExpires = refreshToken && expiresDate < Date.now()
+
+    if (isExpires) {
+      const data = await authService.refresh()
+      localStorageService.setTokens(data)
+    }
+    const accessToken = localStorageService.getAccessToken()
+    if (accessToken) {
+      config.headers = {
+        ...config.headers,
+        Authorization: `Bearer ${accessToken}`,
+      }
+    }
+    return config
+  },
+  function(error) {
+    console.log('error', error)
+    return Promise.reject(error)
+  },
+)
+
+http.interceptors.response.use(
   (res) => res,
   (error) => {
     const expectedErrors =

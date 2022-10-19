@@ -11,11 +11,12 @@ import SheduleList from './components/shedule/SheduleList'
 import { Login } from './components/login/Login'
 import { useDispatch } from 'react-redux'
 import { loadUsersList } from './store/users'
+import { ToastContainer } from 'react-toastify'
 
 function App() {
   const dispatch = useDispatch()
   useEffect(() => {
-    dispatch(loadUsersList())
+    // dispatch(loadUsersList())
   }, [])
   return (
     <Container maxWidth="">
@@ -34,6 +35,7 @@ function App() {
           <Route path="/login" element={<Login />} />
         </Routes>
       </Box>
+      <ToastContainer />
     </Container>
   )
 }

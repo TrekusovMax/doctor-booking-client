@@ -4,23 +4,13 @@ import GetTableSetting from './TableSettings'
 import { DataGrid, ruRU } from '@mui/x-data-grid'
 import Snackbar from '@mui/material/Snackbar'
 import Alert from '@mui/material/Alert'
-import {
-  Typography,
-  Paper,
-  Button,
-  TextField,
-  Checkbox,
-  FormControlLabel,
-} from '@mui/material'
+import { Typography, Paper, Button } from '@mui/material'
 import StyledBox from './StyledBox'
 
-import Dialog from '@mui/material/Dialog'
-import DialogActions from '@mui/material/DialogActions'
-import DialogContent from '@mui/material/DialogContent'
-import DialogTitle from '@mui/material/DialogTitle'
 import OpenDialog from './OpenDialog'
 import { useDispatch } from 'react-redux'
 import { signUp } from '../../store/users'
+import { toast } from 'react-toastify'
 
 export default function UsersList() {
   const dispatch = useDispatch()
@@ -32,8 +22,9 @@ export default function UsersList() {
   const [password, setPassword] = useState('')
   const [name, setName] = useState('')
   const [isAdmin, setIsAdmin] = useState(false)
-
+  const [errors, setErrors] = useState([])
   const [dialogOpen, setDialogOpen] = useState(false)
+
   const handleDialogOpen = () => {
     let confirmDelete = window.confirm('Подтверждаете удаление?')
   }
@@ -48,6 +39,7 @@ export default function UsersList() {
       isAdmin,
     }
     dispatch(signUp(data))
+    toast('asd')
   }
 
   const handleAddNewUser = () => {
@@ -199,71 +191,6 @@ export default function UsersList() {
         setIsAdmin={setIsAdmin}
         handleCreateNewUser={handleCreateNewUser}
       />
-
-      {/* <Dialog
-        open={dialogOpen}
-        onClose={handleDialogClose}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogTitle id="alert-dialog-title">
-          {'Добавление нового сотрудника'}
-        </DialogTitle>
-        <DialogContent>
-          <TextField
-            autoFocus
-            margin="dense"
-            id="name"
-            name="name"
-            label="ФИО"
-            type="text"
-            fullWidth
-            variant="standard"
-            helperText="ФИО не должно быть пустым!"
-          />
-          <TextField
-            autoFocus
-            margin="dense"
-            id="login"
-            label="Логин"
-            type="text"
-            fullWidth
-            variant="standard"
-          />
-          <TextField
-            autoFocus
-            margin="dense"
-            id="password"
-            label="Пароль"
-            type="password"
-            fullWidth
-            variant="standard"
-          />
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={admin}
-                onChange={handleIsAdmin}
-                name="isAdmin"
-              />
-            }
-            label="Администратор?"
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button
-            color="primary"
-            variant="contained"
-            onClick={handleCreateNewUser}
-            autoFocus
-          >
-            Создать
-          </Button>
-          <Button color="error" variant="contained" onClick={handleDialogClose}>
-            Отмена
-          </Button>
-        </DialogActions>
-      </Dialog> */}
     </>
   )
 }
