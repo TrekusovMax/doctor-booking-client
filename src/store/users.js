@@ -12,6 +12,7 @@ const initialState = localStorageService.getAccessToken()
       auth: { userId: localStorageService.getUserId() },
       isLoggedIn: false,
       dataLoaded: false,
+      isRegistered: false,
     }
   : {
       entities: null,
@@ -20,6 +21,7 @@ const initialState = localStorageService.getAccessToken()
       auth: null,
       isLoggedIn: false,
       dataLoaded: false,
+      isRegistered: false,
     }
 const usersSlice = createSlice({
   name: 'users',
@@ -39,6 +41,7 @@ const usersSlice = createSlice({
     },
     authRequestSuccess: (state, action) => {
       state.auth = { ...action.payload, isLoggedIn: true }
+      state.isRegistered = true
     },
     authRequestFailed: (state, action) => {
       state.error = action.payload
@@ -113,13 +116,14 @@ export const signUp = (payload) => async (dispatch) => {
   try {
     const data = await authService.register(payload)
     localStorageService.setTokens(data)
-    dispatch(authRequestSuccess({ userId: data.userId }))
+    dispatch(authRequestSuccess({ userId: data.userId, isRegistered: true }))
+    return data
   } catch (error) {
-    const { errors } = error.response.data.error
-    dispatch(authRequestFailed(errors))
+    const { code, message, errors } = error.response.data.error
+
+    dispatch(authRequestFailed(error.response.data.error))
     /* if (code === 400) {
-      //const errorMessage = generateAuthError(message)
-      dispatch(authRequestFailed(errors))
+      dispatch(authRequestFailed(code))
     } else {
       dispatch(authRequestFailed(errors))
     } */
@@ -144,11 +148,15 @@ export const getUserCurrentData = () => (state) => {
     ? state.users.entities.find((u) => u._id === state.users.auth.userId)
     : null
 }
+export const clearAuthErrors = () => (dispatch) => {
+  dispatch(authRequested())
+}
 
+export const getIsRegistered = () => (state) => state.users.isRegistered
 export const getIsLoggedIn = () => (state) => state.users.isLoggedIn
 export const getDataStatus = () => (state) => state.users.dataLoaded
 export const getDataLoadingStatus = () => (state) => state.users.isLoading
-export const getCurrentUsersId = () => (state) => state.users.userId
+export const getCurrentUsersId = () => (state) => state.users.auth.userId
 export const getAuthErrors = () => (state) => state.users.error
 
 export default usersReducer

@@ -5,8 +5,15 @@ import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
 import DialogTitle from '@mui/material/DialogTitle'
 import { Button, TextField, Checkbox, FormControlLabel } from '@mui/material'
-import { useSelector } from 'react-redux'
-import { getAuthErrors } from '../../store/users'
+import { useDispatch, useSelector } from 'react-redux'
+import {
+  clearAuthErrors,
+  getAuthErrors,
+  getIsRegistered,
+} from '../../store/users'
+
+import { toast } from 'react-toastify'
+import localStorageService from '../../services/localStorage.service'
 
 const OpenDialog = ({
   dialogOpen,
@@ -17,6 +24,7 @@ const OpenDialog = ({
   setIsAdmin,
   handleCreateNewUser,
 }) => {
+  const dispatch = useDispatch()
   const [admin, setAdmin] = useState(false)
   const [isPending, startTransition] = useTransition()
   let errName = ''
@@ -43,11 +51,39 @@ const OpenDialog = ({
     setIsAdmin(!admin)
   }
   const authErrors = useSelector(getAuthErrors())
+  const isRegistered = useSelector(getIsRegistered())
 
   if (authErrors) {
-    errName = authErrors.filter((e) => e.param === 'name')[0]
-    errLogin = authErrors.filter((e) => e.param === 'login')[0]
-    errPassword = authErrors.filter((e) => e.param === 'password')[0]
+    errName =
+      authErrors.errors &&
+      authErrors.errors
+        .map((er) => (er.param === 'name' ? er : ''))
+        .filter((el) => el.param === 'name')[0]
+
+    errLogin =
+      authErrors.errors &&
+      authErrors.errors
+        .map((er) => (er.param === 'login' ? er : ''))
+        .filter((el) => el.param === 'login')[0]
+
+    errPassword =
+      authErrors.errors &&
+      authErrors.errors
+        .map((er) => (er.param === 'password' ? er : ''))
+        .filter((el) => el.param === 'password')[0]
+
+    if (authErrors.message === 'LOGIN_EXISTS') {
+      errLogin = 'Данный логин уже существует! Введите другой логин!'
+      toast.error(errLogin, {
+        position: 'top-center',
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        progress: undefined,
+        theme: 'colored',
+      })
+      dispatch(clearAuthErrors())
+    }
   }
 
   return (

@@ -8,9 +8,15 @@ import { Typography, Paper, Button } from '@mui/material'
 import StyledBox from './StyledBox'
 
 import OpenDialog from './OpenDialog'
-import { useDispatch } from 'react-redux'
-import { signUp } from '../../store/users'
+import { useDispatch, useSelector } from 'react-redux'
+import {
+  getCurrentUsersId,
+  getIsLoggedIn,
+  getIsRegistered,
+  signUp,
+} from '../../store/users'
 import { toast } from 'react-toastify'
+import localStorageService from '../../services/localStorage.service'
 
 export default function UsersList() {
   const dispatch = useDispatch()
@@ -22,7 +28,6 @@ export default function UsersList() {
   const [password, setPassword] = useState('')
   const [name, setName] = useState('')
   const [isAdmin, setIsAdmin] = useState(false)
-  const [errors, setErrors] = useState([])
   const [dialogOpen, setDialogOpen] = useState(false)
 
   const handleDialogOpen = () => {
@@ -31,15 +36,26 @@ export default function UsersList() {
   const handleDialogClose = () => {
     setDialogOpen(false)
   }
-  const handleCreateNewUser = () => {
+  const handleCreateNewUser = async () => {
     const data = {
       name,
       login,
       password,
       isAdmin,
     }
-    dispatch(signUp(data))
-    toast('asd')
+    const res = await dispatch(signUp(data))
+
+    if (res) {
+      toast.success('Добавлен новый сотрудник', {
+        position: 'top-center',
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        progress: undefined,
+        theme: 'colored',
+      })
+      setDialogOpen(false)
+    }
   }
 
   const handleAddNewUser = () => {
