@@ -21,6 +21,7 @@ const authService = {
       login,
       password,
     })
+
     return data
   },
   refresh: async () => {

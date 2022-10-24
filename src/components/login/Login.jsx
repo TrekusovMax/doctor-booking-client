@@ -1,30 +1,47 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Paper, Button, TextField, Typography } from '@mui/material'
 import { useForm } from 'react-hook-form'
 import styles from './Login.module.css'
+import { useDispatch, useSelector } from 'react-redux'
+import { getAuthErrors, login } from '../../store/users'
+import { toast } from 'react-toastify'
 
 export const Login = () => {
+  const [data, setData] = useState({
+    login: 'admin',
+    password: '12345678',
+  })
+  const handleChange = (event) => {
+    setData((prevState) => ({
+      ...prevState,
+      [event.target.name]: event.target.value,
+    }))
+  }
   const {
     register,
     handleSubmit,
     setError,
     formState: { errors, isValid },
   } = useForm({
-    defaultValues: {
-      login: 'admin',
-      password: '12345',
-    },
+    defaultValues: data,
   })
 
-  const onSubmit = (values) => {
-    alert(JSON.stringify(values))
-    /* const data = await dispatch(fetchAuth(values))
-    if (!data.payload) {
-      return alert('Не удалось авторизоваться!')
+  const loginError = useSelector(getAuthErrors())
+  const dispatch = useDispatch()
+
+  const onSubmit = async () => {
+    const res = await dispatch(login(data))
+
+    if (!res) {
+      return toast.error('Не удалось авторизоваться!', {
+        position: 'top-center',
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        progress: undefined,
+        theme: 'colored',
+      })
     }
-    if ('token' in data.payload) {
-      localStorage.setItem('token', data.payload.token)
-    } */
   }
 
   return (
@@ -32,7 +49,7 @@ export const Login = () => {
       <Typography classes={{ root: styles.title }} variant="h5">
         Вход в аккаунт
       </Typography>
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form onSubmit={handleSubmit(onSubmit)} onChange={handleChange}>
         <TextField
           className={styles.field}
           label="Логин"

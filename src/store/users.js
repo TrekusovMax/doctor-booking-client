@@ -92,14 +92,17 @@ export const updateUser = (payload) => async (dispatch) => {
   dispatch(userUpdateRequested())
 }
 
-export const login = ({ payload, redirect }) => async (dispatch) => {
+export const login = (payload) => async (dispatch) => {
   const { login, password } = payload
+
   dispatch(authRequested())
   try {
-    const { data } = await authService.login({ login, password })
+    const data = await authService.login({ login, password })
+
     dispatch(authRequestSuccess({ userId: data.userId }))
     localStorageService.setTokens(data)
-    history.push(redirect)
+    history.push('/')
+    return data
   } catch (error) {
     const { code, message } = error.response.data.error
     if (code === 400) {
@@ -115,18 +118,10 @@ export const signUp = (payload) => async (dispatch) => {
   dispatch(authRequested())
   try {
     const data = await authService.register(payload)
-    localStorageService.setTokens(data)
     dispatch(authRequestSuccess({ userId: data.userId, isRegistered: true }))
     return data
   } catch (error) {
-    const { code, message, errors } = error.response.data.error
-
     dispatch(authRequestFailed(error.response.data.error))
-    /* if (code === 400) {
-      dispatch(authRequestFailed(code))
-    } else {
-      dispatch(authRequestFailed(errors))
-    } */
   }
 }
 export const logOut = () => (dispatch) => {
