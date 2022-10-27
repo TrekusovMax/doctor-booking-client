@@ -1,8 +1,5 @@
 import React from 'react'
-import { Button } from '@mui/material'
-const handleDialogDelete = () => {
-  let confirmDelete = window.confirm('Подтверждаете удаление?')
-}
+
 export const columns = [
   {
     field: 'id',
@@ -40,25 +37,7 @@ export const columns = [
     renderHeader: () => <strong>{'Администратор'}</strong>,
     type: 'boolean',
     width: 140,
-    editable: true,
+    editable: false,
     sortable: false,
-  },
-  {
-    field: 'more',
-    headerName: '',
-    sortable: false,
-    headerAlign: 'center',
-    width: 200,
-    isSecureContext,
-    align: 'center',
-    filterable: false,
-
-    renderCell: () => {
-      return (
-        <Button color="error" onClick={handleDialogDelete} variant="contained">
-          Удалить
-        </Button>
-      )
-    },
   },
 ]

@@ -79,12 +79,23 @@ const authRequested = createAction('users/authRequested')
 const userUpdateRequested = createAction('users/userUpdateRequested')
 const userUpdateFailed = createAction('users/userUpdateFailed')
 
-export const loadUsersList = () => async (dispatch, getState) => {
+export const loadUsersList = () => async (dispatch) => {
   dispatch(usersRequested())
   try {
     const content = await userService.get()
     dispatch(usersReceved(content))
     return content
+  } catch (error) {
+    dispatch(usersRequestFiled(error))
+  }
+}
+export const deleteUser = (id) => async (dispatch) => {
+  dispatch(usersRequested())
+  try {
+    const deletedUser = await userService.delete(id)
+    const content = await userService.get()
+    dispatch(usersReceved(content))
+    return deletedUser
   } catch (error) {
     dispatch(usersRequestFiled(error))
   }

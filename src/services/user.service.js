@@ -25,6 +25,10 @@ const userService = {
     )
     return data
   },
+  delete: async (id) => {
+    const { data } = await httpService.delete(userEndpoint + id)
+    return data
+  },
 }
 
 export default userService

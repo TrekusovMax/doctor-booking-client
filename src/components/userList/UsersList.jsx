@@ -8,6 +8,7 @@ import StyledBox from './StyledBox'
 import OpenDialog from './OpenDialog'
 import { useDispatch, useSelector } from 'react-redux'
 import {
+  deleteUser,
   getDataStatus,
   getUsersList,
   loadUsersList,
@@ -15,17 +16,11 @@ import {
 } from '../../store/users'
 import { toast } from 'react-toastify'
 import { columns } from './columnsSettings'
-import { useNavigate } from 'react-router-dom'
 
 export default function UsersList() {
   const rows = []
   const dispatch = useDispatch()
   const usersDataStatus = useSelector(getDataStatus())
-  const navigate = useNavigate()
-  useEffect(() => {
-    dispatch(loadUsersList())
-  }, [])
-
   const usersList = useSelector(getUsersList())
 
   const [pageSize, setPageSize] = useState(20)
@@ -37,8 +32,10 @@ export default function UsersList() {
   const [name, setName] = useState('')
   const [isAdmin, setIsAdmin] = useState(false)
   const [dialogOpen, setDialogOpen] = useState(false)
+  const [isDeletedUser, setIsDeletedUser] = useState(false)
 
   useEffect(() => {
+    dispatch(loadUsersList())
     usersList &&
       usersList.map((u) =>
         rows.push({
@@ -49,7 +46,8 @@ export default function UsersList() {
         }),
       )
     setTableData(rows)
-  }, [usersDataStatus, dialogOpen])
+    setIsDeletedUser(false)
+  }, [usersDataStatus, dialogOpen, isDeletedUser])
 
   const handleDialogClose = () => {
     setDialogOpen(false)
@@ -93,6 +91,24 @@ export default function UsersList() {
       return params.value ? 'isAdmin' : 'isUser'
     }
   }
+  const handleDialogDelete = async ({ id }) => {
+    let confirmDelete = window.confirm('Подтверждаете удаление?')
+
+    if (confirmDelete) {
+      const res = await dispatch(deleteUser(id))
+      if (res) {
+        toast.error('Cотрудник удалён', {
+          position: 'top-center',
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          progress: undefined,
+          theme: 'colored',
+        })
+        setIsDeletedUser(true)
+      }
+    }
+  }
   const processRowUpdate = (newRow) => {
     const newData = tableData.map((i) => (i.id === newRow.id ? newRow : i))
 
@@ -100,6 +116,29 @@ export default function UsersList() {
     setOpen(true)
     return newRow
   }
+  const btnColumn = {
+    field: 'more',
+    headerName: '',
+    sortable: false,
+    headerAlign: 'center',
+    width: 200,
+    isSecureContext,
+    align: 'center',
+    filterable: false,
+
+    renderCell: (params) => {
+      return (
+        <Button
+          color="error"
+          onClick={() => handleDialogDelete(params)}
+          variant="contained"
+        >
+          Удалить
+        </Button>
+      )
+    },
+  }
+  columns.push(btnColumn)
 
   return (
     <>
