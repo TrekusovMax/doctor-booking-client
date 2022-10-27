@@ -5,8 +5,11 @@ import styles from './Login.module.css'
 import { useDispatch, useSelector } from 'react-redux'
 import { getAuthErrors, login } from '../../store/users'
 import { toast } from 'react-toastify'
+import { useNavigate } from 'react-router-dom'
+import localStorageService from '../../services/localStorage.service'
 
 export const Login = () => {
+  const navigate = useNavigate()
   const [data, setData] = useState({
     login: 'admin',
     password: '12345678',
@@ -25,7 +28,6 @@ export const Login = () => {
   } = useForm({
     defaultValues: data,
   })
-
   const loginError = useSelector(getAuthErrors())
   const dispatch = useDispatch()
 
@@ -42,6 +44,7 @@ export const Login = () => {
         theme: 'colored',
       })
     }
+    navigate('/')
   }
 
   return (

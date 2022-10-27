@@ -1,6 +1,4 @@
 import React, { useEffect, useState } from 'react'
-
-import GetTableSetting from './TableSettings'
 import { DataGrid, ruRU } from '@mui/x-data-grid'
 import Snackbar from '@mui/material/Snackbar'
 import Alert from '@mui/material/Alert'
@@ -10,19 +8,29 @@ import StyledBox from './StyledBox'
 import OpenDialog from './OpenDialog'
 import { useDispatch, useSelector } from 'react-redux'
 import {
-  getCurrentUsersId,
-  getIsLoggedIn,
-  getIsRegistered,
+  getDataStatus,
+  getUsersList,
+  loadUsersList,
   signUp,
 } from '../../store/users'
 import { toast } from 'react-toastify'
-import localStorageService from '../../services/localStorage.service'
+import { columns } from './columnsSettings'
+import { useNavigate } from 'react-router-dom'
 
 export default function UsersList() {
+  const rows = []
   const dispatch = useDispatch()
-  const { rows } = GetTableSetting()
+  const usersDataStatus = useSelector(getDataStatus())
+  const navigate = useNavigate()
+  useEffect(() => {
+    dispatch(loadUsersList())
+  }, [])
+
+  const usersList = useSelector(getUsersList())
+
   const [pageSize, setPageSize] = useState(20)
-  const [tableData, setTableData] = useState(rows)
+  const [tableData, setTableData] = useState([])
+
   const [open, setOpen] = useState(false)
   const [login, setLogin] = useState('')
   const [password, setPassword] = useState('')
@@ -30,9 +38,19 @@ export default function UsersList() {
   const [isAdmin, setIsAdmin] = useState(false)
   const [dialogOpen, setDialogOpen] = useState(false)
 
-  const handleDialogOpen = () => {
-    let confirmDelete = window.confirm('Подтверждаете удаление?')
-  }
+  useEffect(() => {
+    usersList &&
+      usersList.map((u) =>
+        rows.push({
+          id: u._id,
+          login: u.login,
+          fullName: u.name,
+          isAdmin: u.isAdmin,
+        }),
+      )
+    setTableData(rows)
+  }, [usersDataStatus, dialogOpen])
+
   const handleDialogClose = () => {
     setDialogOpen(false)
   }
@@ -44,6 +62,7 @@ export default function UsersList() {
       isAdmin,
     }
     const res = await dispatch(signUp(data))
+    await dispatch(loadUsersList())
 
     if (res) {
       toast.success('Добавлен новый сотрудник', {
@@ -61,66 +80,6 @@ export default function UsersList() {
   const handleAddNewUser = () => {
     setDialogOpen(true)
   }
-
-  const columns = [
-    {
-      field: 'id',
-      width: 50,
-      editable: false,
-      headerAlign: 'center',
-      align: 'center',
-      sortable: false,
-      filterable: false,
-      renderHeader: () => <strong>{'ID'}</strong>,
-      hide: true,
-    },
-    {
-      editable: false,
-      headerAlign: 'center',
-      align: 'center',
-      sortable: false,
-      filterable: false,
-      renderHeader: () => <strong>{'Логин'}</strong>,
-      field: 'login',
-      width: 120,
-    },
-    {
-      width: 500,
-      sortable: false,
-      editable: false,
-      headerAlign: 'center',
-      align: 'center',
-      renderHeader: () => <strong>{'ФИО'}</strong>,
-      field: 'fullName',
-    },
-
-    {
-      field: 'isAdmin',
-      renderHeader: () => <strong>{'Администратор'}</strong>,
-      type: 'boolean',
-      width: 140,
-      editable: true,
-      sortable: false,
-    },
-    {
-      field: 'more',
-      headerName: '',
-      sortable: false,
-      headerAlign: 'center',
-      width: 200,
-      isSecureContext,
-      align: 'center',
-      filterable: false,
-
-      renderCell: () => {
-        return (
-          <Button color="error" onClick={handleDialogOpen} variant="contained">
-            Удалить
-          </Button>
-        )
-      },
-    },
-  ]
 
   const handleClose = (event, reason) => {
     if (reason === 'clickaway') {
@@ -141,18 +100,7 @@ export default function UsersList() {
     setOpen(true)
     return newRow
   }
-  /* useEffect(() => {
-    console.log('name', name)
-  }, [name])
-  useEffect(() => {
-    console.log('login', login)
-  }, [login])
-  useEffect(() => {
-    console.log('password', password)
-  }, [password])
-  useEffect(() => {
-    console.log('isAdmin', isAdmin)
-  }, [isAdmin]) */
+
   return (
     <>
       <Typography variant="h3" align="center" sx={{ my: 2 }} component="h2">

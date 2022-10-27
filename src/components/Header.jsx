@@ -7,8 +7,10 @@ import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
 import RemoveRedEyeRoundedIcon from '@mui/icons-material/RemoveRedEyeRounded'
 import { Link, useNavigate } from 'react-router-dom'
+import localStorageService from '../services/localStorage.service'
 export default function Header() {
   const navigate = useNavigate()
+  const currentUserId = localStorageService.getAccessToken()
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static">
@@ -28,19 +30,22 @@ export default function Header() {
               Ocovision
             </Link>
           </Typography>
-
-          <Button onClick={() => navigate('/shedule')} color="inherit">
-            Расписание
-          </Button>
-          <Button onClick={() => navigate('/list')} color="inherit">
-            Список пациентов
-          </Button>
-          <Button onClick={() => navigate('/users')} color="inherit">
-            Список пользователей
-          </Button>
-          <Button onClick={() => navigate('/login')} color="inherit">
-            Войти
-          </Button>
+          {currentUserId && (
+            <>
+              <Button onClick={() => navigate('/shedule')} color="inherit">
+                Расписание
+              </Button>
+              <Button onClick={() => navigate('/list')} color="inherit">
+                Список пациентов
+              </Button>
+              <Button onClick={() => navigate('/users')} color="inherit">
+                Список пользователей
+              </Button>
+              <Button onClick={() => navigate('/logout')} color="inherit">
+                Выйти
+              </Button>
+            </>
+          )}
         </Toolbar>
       </AppBar>
     </Box>

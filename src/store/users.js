@@ -3,7 +3,6 @@ import authService from '../services/auth.service'
 import localStorageService from '../services/localStorage.service'
 import userService from '../services/user.service'
 import { generateAuthError } from '../utils/generateAuthError'
-import history from '../utils/history'
 const initialState = localStorageService.getAccessToken()
   ? {
       entities: null,
@@ -23,6 +22,7 @@ const initialState = localStorageService.getAccessToken()
       dataLoaded: false,
       isRegistered: false,
     }
+
 const usersSlice = createSlice({
   name: 'users',
   initialState,
@@ -40,7 +40,8 @@ const usersSlice = createSlice({
       state.isLoading = false
     },
     authRequestSuccess: (state, action) => {
-      state.auth = { ...action.payload, isLoggedIn: true }
+      state.auth = { ...action.payload }
+      state.isLoggedIn = true
       state.isRegistered = true
     },
     authRequestFailed: (state, action) => {
@@ -83,6 +84,7 @@ export const loadUsersList = () => async (dispatch, getState) => {
   try {
     const content = await userService.get()
     dispatch(usersReceved(content))
+    return content
   } catch (error) {
     dispatch(usersRequestFiled(error))
   }
@@ -101,7 +103,6 @@ export const login = (payload) => async (dispatch) => {
 
     dispatch(authRequestSuccess({ userId: data.userId }))
     localStorageService.setTokens(data)
-    history.push('/')
     return data
   } catch (error) {
     const { code, message } = error.response.data.error

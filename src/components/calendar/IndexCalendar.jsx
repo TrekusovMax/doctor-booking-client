@@ -83,7 +83,8 @@ const IndexCalendar = () => {
       dayHeaderFormat: (date) => moment(date).format('DD MMMM YYYY г.'),
       dayFormat: (date) => moment(date).format('DD MMMM'),
       agendaDateFormat: (date) => moment(date).format('DD MMMM'),
-      monthHeaderFormat: (date) => capitalize(moment(date).format('MMMM YYYY г.')),
+      monthHeaderFormat: (date) =>
+        capitalize(moment(date).format('MMMM YYYY г.')),
       dayRangeHeaderFormat: ({ start, end }) =>
         moment(start).format('DD MMMM') + ' - ' + moment(end).format('DD MMMM'),
       dateFormat: (date) => moment(date).format('D'),

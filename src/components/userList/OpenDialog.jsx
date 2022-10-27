@@ -13,7 +13,6 @@ import {
 } from '../../store/users'
 
 import { toast } from 'react-toastify'
-import localStorageService from '../../services/localStorage.service'
 
 const OpenDialog = ({
   dialogOpen,
