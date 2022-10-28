@@ -12,6 +12,7 @@ const initialState = localStorageService.getAccessToken()
       isLoggedIn: false,
       dataLoaded: false,
       isRegistered: false,
+      isDeleted: false,
     }
   : {
       entities: null,
@@ -21,6 +22,7 @@ const initialState = localStorageService.getAccessToken()
       isLoggedIn: false,
       dataLoaded: false,
       isRegistered: false,
+      isDeleted: false,
     }
 
 const usersSlice = createSlice({
@@ -58,6 +60,9 @@ const usersSlice = createSlice({
         state.entities.findIndex((u) => u._id === action.payload._id)
       ] = action.payload
     },
+    userDeleteSuccessed: (state) => {
+      state.isDeleted = true
+    },
     authRequested: (state) => {
       state.error = null
     },
@@ -73,6 +78,7 @@ const {
   authRequestFailed,
   userLoggedOut,
   userUpdateSuccessed,
+  userDeleteSuccessed,
 } = actions
 
 const authRequested = createAction('users/authRequested')
@@ -95,6 +101,7 @@ export const deleteUser = (id) => async (dispatch) => {
     const deletedUser = await userService.delete(id)
     const content = await userService.get()
     dispatch(usersReceved(content))
+    dispatch(userDeleteSuccessed())
     return deletedUser
   } catch (error) {
     dispatch(usersRequestFiled(error))

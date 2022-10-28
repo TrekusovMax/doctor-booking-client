@@ -40,4 +40,26 @@ export const columns = [
     editable: false,
     sortable: false,
   },
+  {
+    field: 'more',
+    headerName: '',
+    sortable: false,
+    headerAlign: 'center',
+    width: 200,
+    isSecureContext,
+    align: 'center',
+    filterable: false,
+
+    renderCell: (params) => {
+      return (
+        <Button
+          color="error"
+          onClick={() => handleDialogDelete(params)}
+          variant="contained"
+        >
+          Удалить
+        </Button>
+      )
+    },
+  },
 ]

@@ -36,15 +36,17 @@ function App() {
         {!currentUserId ? (
           <Login />
         ) : (
-          <Routes>
-            <Route path="/" element={<Calendar />} />
-            <Route path="/list" element={<PatientList />} />
-            <Route path="/list/:id" element={<PatientInfo />} />
-            <Route path="/users" element={<UsersList />} />
-            <Route path="/shedule" element={<SheduleList />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/logout" element={<Logout />} />
-          </Routes>
+          <AppLoader>
+            <Routes>
+              <Route path="/" element={<Calendar />} />
+              <Route path="/list" element={<PatientList />} />
+              <Route path="/list/:id" element={<PatientInfo />} />
+              <Route path="/users" element={<UsersList />} />
+              <Route path="/shedule" element={<SheduleList />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/logout" element={<Logout />} />
+            </Routes>
+          </AppLoader>
         )}
       </Box>
       <ToastContainer />
