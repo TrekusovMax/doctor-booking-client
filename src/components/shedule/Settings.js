@@ -2,7 +2,15 @@ const hoursStart = []
 const hoursEnd = []
 const minutesStart = []
 const minutesEnd = []
-const days = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресение']
+const days = [
+  'Понедельник',
+  'Вторник',
+  'Среда',
+  'Четверг',
+  'Пятница',
+  'Суббота',
+  'Воскресение',
+]
 for (let i = 8; i < 21; i++) {
   hoursStart.push(i)
   hoursEnd.push(i)

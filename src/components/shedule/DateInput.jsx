@@ -21,8 +21,6 @@ export default function DateInput({ name, setActualDays }) {
     }))
   }
 
-  //console.log(new Date(datePickerValue).getTime())
-
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale={locale}>
       <DatePicker

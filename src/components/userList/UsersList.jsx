@@ -10,6 +10,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import {
   deleteUser,
   getDataStatus,
+  getUserCurrentData,
   getUsersList,
   loadUsersList,
   signUp,
@@ -20,6 +21,7 @@ export default function UsersList() {
   const rows = []
   const dispatch = useDispatch()
   const usersDataStatus = useSelector(getDataStatus())
+  const currentUser = useSelector(getUserCurrentData())
   const usersList = useSelector(getUsersList())
 
   const [pageSize, setPageSize] = useState(20)
@@ -165,15 +167,17 @@ export default function UsersList() {
       filterable: false,
 
       renderCell: (params) => {
-        return (
-          <Button
-            color="error"
-            onClick={() => handleDialogDelete(params)}
-            variant="contained"
-          >
-            Удалить
-          </Button>
-        )
+        if (params.id !== currentUser._id) {
+          return (
+            <Button
+              color="error"
+              onClick={() => handleDialogDelete(params)}
+              variant="contained"
+            >
+              Удалить
+            </Button>
+          )
+        }
       },
     },
   ]
