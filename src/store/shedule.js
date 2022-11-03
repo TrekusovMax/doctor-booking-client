@@ -1,4 +1,5 @@
 import { createAction, createSlice } from '@reduxjs/toolkit'
+import sheduleService from './../services/shedule.service'
 
 const usersSlice = createSlice({
   name: 'shedule',
@@ -31,5 +32,17 @@ const usersSlice = createSlice({
 
 const { reducer: sheduleReducer, actions } = usersSlice
 const { sheduleRequested, sheduleReceved, sheduleRequestFiled } = actions
+
+export const getShedule = () => async (dispatch) => {
+  dispatch(sheduleRequested())
+  try {
+    const content = await sheduleService.get()
+    dispatch(sheduleReceved(content))
+  } catch (error) {
+    dispatch(sheduleRequestFiled(error))
+  }
+}
+
+export const getDays = () => (state) => state.shedule.days
 
 export default sheduleReducer
