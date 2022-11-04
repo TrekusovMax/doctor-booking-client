@@ -8,16 +8,22 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 
-export default function DateInput({ name, setActualDays }) {
+export default function DateInput({
+  name,
+  setActualDays,
+  actualDays,
+  error,
+  sheduleId,
+}) {
   const locale = 'ru'
-  const [datePickerValue, setDatePickerValue] = useState(dayjs())
+  const date = sheduleId ? dayjs(actualDays).format('MM.DD.YYYY') : ''
+  const [datePickerValue, setDatePickerValue] = useState(date)
 
   const handleChange = (newValue) => {
     setDatePickerValue(newValue)
-
     setActualDays((prev) => ({
       ...prev,
-      [`${name}`]: new Date(newValue).getTime(),
+      [`${name}`]: dayjs(newValue).valueOf(),
     }))
   }
 
@@ -26,7 +32,16 @@ export default function DateInput({ name, setActualDays }) {
       <DatePicker
         value={datePickerValue}
         onChange={handleChange}
-        renderInput={(params) => <TextField {...params} />}
+        renderInput={(params) => (
+          <TextField
+            {...params}
+            inputProps={{
+              ...params.inputProps,
+              placeholder: '',
+            }}
+            error={error}
+          />
+        )}
       />
     </LocalizationProvider>
   )

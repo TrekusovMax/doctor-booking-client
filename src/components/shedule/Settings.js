@@ -34,5 +34,6 @@ export const initState = days.map((d) => ({
     hoursEnd: hoursEnd[0],
     minutesStart: minutesStart[0],
     minutesEnd: minutesEnd[0],
+    receiptTime: 5,
   },
 }))

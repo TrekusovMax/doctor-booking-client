@@ -9,14 +9,17 @@ import {
 } from '@mui/material'
 import { Settings } from './Settings'
 import BasicSelect from './BasicSelect'
+import { shallowEqual } from 'react-redux'
 
-const SheduleDay = ({ day, setShedule }) => {
-  const [checked, setChecked] = useState(true)
-  const [hoursStart, setHoursStart] = useState(8)
-  const [minutesStart, setMinutesStart] = useState(0)
-  const [hoursEnd, setHoursEnd] = useState(8)
-  const [minutesEnd, setMinutesEnd] = useState(0)
-  const [receiptTime, setReceiptTime] = useState(5)
+const SheduleDay = ({ day, setShedule, shedule, sheduleId }) => {
+  const [checked, setChecked] = useState(
+    sheduleId ? shedule[day].enabled : false,
+  )
+  const [hoursStart, setHoursStart] = useState(shedule[day].hoursStart)
+  const [minutesStart, setMinutesStart] = useState(shedule[day].minutesStart)
+  const [hoursEnd, setHoursEnd] = useState(shedule[day].hoursEnd)
+  const [minutesEnd, setMinutesEnd] = useState(shedule[day].minutesEnd)
+  const [receiptTime, setReceiptTime] = useState(shedule[day].receiptTime)
 
   const switchRef = useRef()
 
@@ -25,7 +28,7 @@ const SheduleDay = ({ day, setShedule }) => {
 
     setShedule((prev) =>
       prev.map((item) =>
-        Object.keys(item)[0] === day
+        shallowEqual(Object.keys(item), day)
           ? { [`${day}`]: { ...item[day], enabled: event.target.checked } }
           : item,
       ),
@@ -36,7 +39,7 @@ const SheduleDay = ({ day, setShedule }) => {
 
     setShedule((prev) =>
       prev.map((item) =>
-        Object.keys(item)[0] === day
+        shallowEqual(Object.keys(item), day)
           ? { [`${day}`]: { ...item[day], [`${elem}`]: event.target.value } }
           : item,
       ),

@@ -13,3 +13,4 @@ const sheduleService = {
 }
 
 export default sheduleService
+

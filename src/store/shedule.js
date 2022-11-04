@@ -1,9 +1,10 @@
 import { createAction, createSlice } from '@reduxjs/toolkit'
-import sheduleService from './../services/shedule.service'
+import sheduleService from '../services/shedule.service'
 
 const usersSlice = createSlice({
   name: 'shedule',
   initialState: {
+    id: null,
     days: [],
     date_from: 0,
     date_to: 0,
@@ -20,6 +21,7 @@ const usersSlice = createSlice({
       state.days = action.payload.days
       state.date_from = action.payload.date_from
       state.date_to = action.payload.date_to
+      state.id = action.payload._id
       state.isLoading = false
       state.dataLoaded = true
     },
@@ -43,6 +45,20 @@ export const getShedule = () => async (dispatch) => {
   }
 }
 
+export const setNewShedule = (payload) => async (dispatch) => {
+  dispatch(sheduleRequested())
+  try {
+    const content = await sheduleService.create(payload)
+    dispatch(sheduleReceved(content))
+  } catch (error) {
+    dispatch(sheduleRequestFiled(error))
+  }
+}
+
 export const getDays = () => (state) => state.shedule.days
+export const getDateFrom = () => (state) => state.shedule.date_from
+export const getDateTo = () => (state) => state.shedule.date_to
+export const getIsLoading = () => (state) => state.shedule.isLoading
+export const getSheduleId = () => (state) => state.shedule.id
 
 export default sheduleReducer
