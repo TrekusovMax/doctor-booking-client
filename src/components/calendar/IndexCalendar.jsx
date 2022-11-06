@@ -1,16 +1,42 @@
-import React, { Children, useCallback, useId, useMemo, useState } from 'react'
-import { Calendar, momentLocalizer } from 'react-big-calendar'
+import React, {
+  Children,
+  useCallback,
+  useId,
+  useMemo,
+  useState,
+  useEffect,
+} from 'react'
+import { Calendar, momentLocalizer, Views } from 'react-big-calendar'
 import CustomToolbar from './CustomToolbar '
 import BasicModal from './Modal'
-
 import moment from 'moment'
-import 'react-big-calendar/lib/css/react-big-calendar.css'
 
+import 'react-big-calendar/lib/css/react-big-calendar.css'
 import 'moment-timezone'
 import 'moment/locale/ru'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
+import { useDispatch, useSelector } from 'react-redux'
+import {
+  getDateFrom,
+  getDateTo,
+  getDays,
+  getShedule,
+} from '../../store/shedule'
 
 const IndexCalendar = () => {
+  const dispatch = useDispatch()
+  const date_from = useSelector(getDateFrom())
+  const date_to = useSelector(getDateTo())
+  const sheduleDays = useSelector(getDays())
+
+  const [view, setView] = useState(Views.MONTH)
+  const [date, setDate] = useState(new Date())
+  const [myEvents, setEvents] = useState(events)
+
+  const onView = (newView) => setView(newView)
+  const onNavigate = (newDate) => setDate(newDate)
+
+  const localizer = momentLocalizer(moment)
   const CURRENT_DATE = moment().toDate()
   const events = [
     {
@@ -21,48 +47,46 @@ const IndexCalendar = () => {
     },
   ]
 
-  const [myEvents, setEvents] = useState(events)
+  useEffect(() => {
+    dispatch(getShedule())
+  }, [])
+  //console.log(sheduleDays)
 
-  const handleSelectSlot = useCallback(
-    ({ start, end }) => {
-      if (moment(start).valueOf() >= moment().valueOf()) {
-        const title = window.prompt('Новое событие')
+  const handleSelectSlot = ({ start, end }) => {
+    if (view === Views.MONTH) {
+      setView(Views.DAY)
+      setDate(moment(start))
+      return
+    }
+    if (moment(start).valueOf() >= moment().valueOf()) {
+      const title = window.prompt('Новое событие')
 
-        if (title) {
-          setEvents((prev) => [...prev, { start, end, title }])
-        }
+      if (title) {
+        setEvents((prev) => [...prev, { start, end, title }])
       }
-    },
-    [setEvents],
-  )
+    }
+  }
   //const handleSelectEvent = useCallback((event) => <BasicModal />, [])
-  const localizer = momentLocalizer(moment)
 
-  const ColoredDateCellWrapper = ({ children, value }) =>
-    React.cloneElement(Children.only(children), {
-      style: {
-        ...children.style,
-        backgroundColor: value < CURRENT_DATE ? 'lightgreen' : 'lightblue',
-      },
-    })
+  const ColoredDateCellWrapper = ({ children, value }) => {
+    if (view === Views.MONTH) {
+      if (value >= date_from && value <= date_to) {
+        console.log(moment(date_to).toDate())
+        console.log(value)
+        return React.cloneElement(Children.only(children), {
+          style: {
+            ...children.style,
+            backgroundColor:
+              /* value < CURRENT_DATE ? 'lightgrey' :*/ 'lightgreen',
+          },
+        })
+      }
+    }
+  }
 
   const onSelecting = useCallback((range) => {
     return false
   }, [])
-
-  const messages = {
-    week: 'Неделя',
-    work_week: 'Рабочая неделя',
-    day: 'День',
-    month: 'Месяц',
-    previous: 'Предыдущая неделя',
-    next: 'Следующая неделя',
-    today: 'Сегодня',
-    agenda: 'Подробнее',
-  }
-  /*   const handleEventClick = (event) => {
-    console.log(event)
-  } */
 
   //Настройка внешнего вида события
   const CustomEvent = (event) => {
@@ -114,12 +138,15 @@ const IndexCalendar = () => {
       formats={formats}
       culture={'ru-RU'}
       localizer={localizer}
-      defaultDate={new Date()}
-      defaultView="month"
+      //defaultDate={new Date()}
+      date={date}
+      view={view}
+      //defaultView={view}
+      onView={onView}
+      onNavigate={onNavigate}
       events={myEvents}
       style={{ height: '100vh' }}
       views={['month', 'day', 'work_week']}
-      messages={messages}
       selectable
       onSelectSlot={handleSelectSlot} //запись события
       //onSelectEvent={handleSelectEvent}

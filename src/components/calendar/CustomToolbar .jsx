@@ -1,23 +1,8 @@
 import React from 'react'
+
 import 'react-big-calendar/lib/css/react-big-calendar.css'
 
 const CustomToolbar = (props) => {
-  /* moment.updateLocale('ru', {
-    months: [
-      'Января',
-      'Февраля',
-      'Марта',
-      'Апреля',
-      'Мая',
-      'Июня',
-      'Июля',
-      'Августа',
-      'Сентября',
-      'Октября',
-      'Ноября',
-      'Декабря',
-    ],
-  }) */
   const goToBack = () => {
     props.onNavigate('PREV')
   }
@@ -37,49 +22,25 @@ const CustomToolbar = (props) => {
     props.onView('month')
   }
 
-  /* const setLabel = (view) => {
-    switch (view) {
-      case 'month':
-        moment.updateLocale('ru', {
-          months: [
-            'Январь',
-            'Февраль',
-            'Март',
-            'Апрель',
-            'Май',
-            'Июнь',
-            'Июль',
-            'Август',
-            'Сентябрь',
-            'Октябрь',
-            'Ноябрь',
-            'Декабрь',
-          ],
-        })
-        return moment(props.date).format('MMMM YYYY г.')
-      case 'day':
-        //console.log(props)
-        return moment(props.date).format('DD MMMM YYYY')
-      case 'work_week':
-        //console.log(props)
-        //const days = props.label.replace(/[^\w–]/g, '')
-
-        return moment(props.date).format(` MMMM YYYY г.`)
-    }
-  } */
-
-  //console.log(moment().local().format('MMMM'))
   return (
     <div className="rbc-toolbar">
       <span className="rbc-btn-group">
         <button type="button" onClick={goToBack}>
-          <span className="next-icon">Предыдущий месяц</span>
+          <span className="next-icon">
+            {props.view === 'month' ? 'Предыдущий месяц' : ''}
+            {props.view === 'day' ? 'Предыдущий день' : ''}
+            {props.view === 'work_week' ? 'Предыдущая неделя' : ''}
+          </span>
         </button>
         <button type="button" onClick={goToCurrent}>
           <span className="next-icon">Сегодня</span>
         </button>
         <button type="button" onClick={goToNext}>
-          <span className="fa fa-chevron-right">Следующий месяц</span>
+          <span className="fa fa-chevron-right">
+            {props.view === 'month' ? 'Следующий месяц' : ''}
+            {props.view === 'day' ? 'Следующий день' : ''}
+            {props.view === 'work_week' ? 'Следующая неделя' : ''}
+          </span>
         </button>
       </span>
       <span className="rbc-toolbar-label">
