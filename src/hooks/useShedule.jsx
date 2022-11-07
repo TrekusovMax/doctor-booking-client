@@ -14,7 +14,7 @@ export const UseShedule = () => {
     'Четверг',
     'Пятница',
     'Суббота',
-    'Воскресение',
+    'Воскресенье',
   ]
   for (let i = 8; i < 21; i++) {
     hoursStart.push(i)

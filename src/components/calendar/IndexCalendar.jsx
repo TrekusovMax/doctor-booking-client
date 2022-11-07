@@ -1,4 +1,11 @@
-import React, { Children, useCallback, useId, useMemo, useState, useEffect } from 'react'
+import React, {
+  Children,
+  useCallback,
+  useId,
+  useMemo,
+  useState,
+  useEffect,
+} from 'react'
 import { Calendar, momentLocalizer, Views } from 'react-big-calendar'
 import CustomToolbar from './CustomToolbar '
 import BasicModal from './Modal'
@@ -9,7 +16,14 @@ import 'moment-timezone'
 import 'moment/locale/ru'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
 import { useDispatch, useSelector } from 'react-redux'
-import { getDateFrom, getDateTo, getDays, getShedule } from '../../store/shedule'
+import {
+  getDateFrom,
+  getDateTo,
+  getDays,
+  getShedule,
+} from '../../store/shedule'
+import { capitalize, isNull } from 'lodash'
+import shallowEqual from 'shallowequal'
 
 const IndexCalendar = () => {
   const events = [
@@ -54,26 +68,80 @@ const IndexCalendar = () => {
       }
     }
   }
+  const daysOfWeek = []
+  const allowedDays = {}
   //const handleSelectEvent = useCallback((event) => <BasicModal />, [])
+  sheduleDays &&
+    sheduleDays.map(
+      (item) => daysOfWeek.push(...Object.keys(item)),
+      //console.log(item['Среда'] && item['Среда'].enabled),
+    )
 
+  sheduleDays &&
+    sheduleDays.map(
+      (day, i) => (allowedDays[daysOfWeek[i]] = day[daysOfWeek[i]].enabled),
+    )
+
+  //console.log(allowedDays)
   const ColoredDateCellWrapper = ({ children, value }) => {
     if (view === Views.MONTH) {
-      //console.log(moment(date_to).toDate())
+      //  console.log(allowedDays[`${capitalize(moment(value).format('dddd'))}`])
       //console.log(moment(value).format('dddd'))
-      sheduleDays.map((s) => console.log(s[`${capitalize(moment(value).format('dddd'))}`]))
+      //sheduleDays.map((s) => console.log(s[`${capitalize(moment(value).format('dddd'))}`]))
+      if (
+        value >= date_from &&
+        value < date_to &&
+        allowedDays[`${capitalize(moment(value).format('dddd'))}`]
+      ) {
+        return React.cloneElement(Children.only(children, value), {
+          style: {
+            ...children.style,
+            backgroundColor: 'lightgreen',
+          },
+        })
+      }
+
+      if (value >= date_from && isNull(date_to)) {
+        return React.cloneElement(Children.only(children, value), {
+          style: {
+            ...children.style,
+            backgroundColor: 'lightgreen',
+          },
+        })
+      }
+      if (
+        !allowedDays[`${capitalize(moment(value).format('dddd'))}`] &&
+        value >= date_from &&
+        value < date_to
+      ) {
+        return React.cloneElement(Children.only(children, value), {
+          style: {
+            ...children.style,
+            backgroundColor: 'red',
+          },
+        })
+      }
       return React.cloneElement(Children.only(children, value), {
         style: {
           ...children.style,
-          backgroundColor: value >= date_from && value < date_to ? 'lightgreen' : 'lightgrey',
+          backgroundColor: 'lightgrey',
         },
-        /*style: {
-          ...children.style,
-            backgroundColor:
-            sheduleDays && sheduleDays.map((s) => s[`${moment(value).format('dddd')}`].enabled)
-              ? 'lightgreen'
-              : 'lightgrey', 
-        },*/
       })
+
+      /*return React.cloneElement(Children.only(children, value), {
+        style: {
+          ...children.style,
+          backgroundColor:
+            value >= date_from && value < date_to ? 'lightgreen' : 'lightgrey',
+          backgroundColor:
+            value >= date_from && isNull(date_to) ? 'lightgreen' : 'lightgrey',
+          backgroundColor:
+            allowedDays &&
+            allowedDays[`${capitalize(moment(value).format('dddd'))}`]
+              ? 'lightgreen'
+              : 'red',
+        }, 
+      })*/
     }
   }
 
@@ -100,7 +168,8 @@ const IndexCalendar = () => {
       dayHeaderFormat: (date) => moment(date).format('DD MMMM YYYY г.'),
       dayFormat: (date) => moment(date).format('DD MMMM'),
       agendaDateFormat: (date) => moment(date).format('DD MMMM'),
-      monthHeaderFormat: (date) => capitalize(moment(date).format('MMMM YYYY г.')),
+      monthHeaderFormat: (date) =>
+        capitalize(moment(date).format('MMMM YYYY г.')),
       dayRangeHeaderFormat: ({ start, end }) =>
         moment(start).format('DD MMMM') + ' - ' + moment(end).format('DD MMMM'),
       dateFormat: (date) => moment(date).format('D'),
@@ -151,7 +220,7 @@ const IndexCalendar = () => {
       timeslots={1}
       max={max}
       min={min}
-      //onSelecting={onSelecting}
+      onSelecting={onSelecting}
     />
   )
 }
