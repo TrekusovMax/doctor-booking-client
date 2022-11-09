@@ -1,4 +1,11 @@
-import React, { Children, useCallback, useId, useMemo, useState, useEffect } from 'react'
+import React, {
+  Children,
+  useCallback,
+  useId,
+  useMemo,
+  useState,
+  useEffect,
+} from 'react'
 import { Calendar, momentLocalizer, Views } from 'react-big-calendar'
 import CustomToolbar from './CustomToolbar '
 import BasicModal from './Modal'
@@ -9,9 +16,15 @@ import 'moment-timezone'
 import 'moment/locale/ru'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
 import { useDispatch, useSelector } from 'react-redux'
-import { getDateFrom, getDateTo, getDays, getShedule } from '../../store/shedule'
+import {
+  getDateFrom,
+  getDateTo,
+  getDays,
+  getShedule,
+} from '../../store/shedule'
 import { isNull } from 'lodash'
 import { capitalize } from '../../utils/capitalize'
+import shallowEqual from 'shallowequal'
 
 const IndexCalendar = () => {
   const events = [
@@ -30,6 +43,9 @@ const IndexCalendar = () => {
   const [view, setView] = useState(Views.MONTH)
   const [date, setDate] = useState(new Date())
   const [myEvents, setEvents] = useState(events)
+  const [startDay, setStartDay] = useState({ hours: 0, minutes: 0 })
+  const [endDay, setEndDay] = useState({ hours: 23, minutes: 59 })
+  const [receiptTime, setsReceiptTime] = useState(5)
 
   const onView = (newView) => setView(newView)
   const onNavigate = (newDate) => setDate(newDate)
@@ -40,8 +56,23 @@ const IndexCalendar = () => {
   useEffect(() => {
     dispatch(getShedule())
   }, [])
-  console.log(sheduleDays)
+
+  // console.log(sheduleDays)
   const handleSelectSlot = ({ start, end }) => {
+    const dayOfWeek = capitalize(moment(start).format('dddd'))
+    const today = sheduleDays.filter((day) =>
+      shallowEqual(Object.keys(day).join(), dayOfWeek),
+    )[0]
+    setStartDay({
+      hours: today[dayOfWeek].hoursStart,
+      minutes: today[dayOfWeek].minutesStart,
+    })
+    setEndDay({
+      hours: today[dayOfWeek].hoursEnd,
+      minutes: today[dayOfWeek].minutesEnd,
+    })
+    setsReceiptTime(today[dayOfWeek].receiptTime)
+
     if (view === Views.MONTH) {
       //Если дата меньше текущей
       if (moment(start).valueOf() < moment().valueOf()) {
@@ -68,18 +99,23 @@ const IndexCalendar = () => {
   //Установка выходных дней
   const daysOfWeek = []
   const allowedDays = {}
-  sheduleDays && sheduleDays.map((item) => daysOfWeek.push(...Object.keys(item)))
   sheduleDays &&
-    sheduleDays.map((day, i) => (allowedDays[daysOfWeek[i]] = day[daysOfWeek[i]].enabled))
+    sheduleDays.map((item) => daysOfWeek.push(...Object.keys(item)))
+  sheduleDays &&
+    sheduleDays.map(
+      (day, i) => (allowedDays[daysOfWeek[i]] = day[daysOfWeek[i]].enabled),
+    )
 
   //console.log(allowedDays)
   const ColoredDateCellWrapper = useMemo(
     () => ({ children, value }) => {
+      const dayOfWeek = capitalize(moment(value).format('dddd'))
+
       if (view === Views.MONTH) {
         if (
           value >= date_from &&
           value <= date_to &&
-          allowedDays[`${capitalize(moment(value).format('dddd'))}`]
+          allowedDays[`${dayOfWeek}`]
         ) {
           return React.cloneElement(Children.only(children, value), {
             style: {
@@ -92,7 +128,7 @@ const IndexCalendar = () => {
         if (
           value >= date_from &&
           isNull(date_to) &&
-          allowedDays[`${capitalize(moment(value).format('dddd'))}`]
+          allowedDays[`${dayOfWeek}`]
         ) {
           return React.cloneElement(Children.only(children, value), {
             style: {
@@ -104,7 +140,7 @@ const IndexCalendar = () => {
         if (
           value >= date_from &&
           isNull(date_to) &&
-          !allowedDays[`${capitalize(moment(value).format('dddd'))}`]
+          !allowedDays[`${dayOfWeek}`]
         ) {
           return React.cloneElement(Children.only(children, value), {
             style: {
@@ -114,7 +150,7 @@ const IndexCalendar = () => {
           })
         }
         if (
-          !allowedDays[`${capitalize(moment(value).format('dddd'))}`] &&
+          !allowedDays[`${dayOfWeek}`] &&
           value >= date_from &&
           value <= date_to
         ) {
@@ -133,7 +169,7 @@ const IndexCalendar = () => {
         })
       }
       if (view === Views.DAY) {
-        console.log(view)
+        //console.log(capitalize(moment(value).format('dddd')))
       }
     },
     [date_from, view],
@@ -159,7 +195,8 @@ const IndexCalendar = () => {
       dayHeaderFormat: (date) => moment(date).format('DD MMMM YYYY г.'),
       dayFormat: (date) => moment(date).format('DD MMMM'),
       agendaDateFormat: (date) => moment(date).format('DD MMMM'),
-      monthHeaderFormat: (date) => capitalize(moment(date).format('MMMM YYYY г.')),
+      monthHeaderFormat: (date) =>
+        capitalize(moment(date).format('MMMM YYYY г.')),
       dayRangeHeaderFormat: ({ start, end }) =>
         moment(start).format('DD MMMM') + ' - ' + moment(end).format('DD MMMM'),
       dateFormat: (date) => moment(date).format('D'),
@@ -173,7 +210,8 @@ const IndexCalendar = () => {
     CURRENT_DATE.getFullYear(),
     CURRENT_DATE.getMonth(),
     CURRENT_DATE.getDate(),
-    8,
+    startDay.hours,
+    startDay.minutes,
   )
 
   // Время окончания рабочего дня
@@ -181,7 +219,8 @@ const IndexCalendar = () => {
     CURRENT_DATE.getFullYear(),
     CURRENT_DATE.getMonth(),
     CURRENT_DATE.getDate(),
-    17,
+    endDay.hours,
+    endDay.minutes,
   )
 
   return (
@@ -206,7 +245,7 @@ const IndexCalendar = () => {
         toolbar: CustomToolbar,
         event: CustomEvent,
       }}
-      step={10}
+      step={receiptTime}
       timeslots={1}
       max={max}
       min={min}
