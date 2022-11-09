@@ -1,11 +1,4 @@
-import React, {
-  Children,
-  useCallback,
-  useId,
-  useMemo,
-  useState,
-  useEffect,
-} from 'react'
+import React, { Children, useCallback, useId, useMemo, useState, useEffect } from 'react'
 import { Calendar, momentLocalizer, Views } from 'react-big-calendar'
 import CustomToolbar from './CustomToolbar '
 import BasicModal from './Modal'
@@ -16,14 +9,9 @@ import 'moment-timezone'
 import 'moment/locale/ru'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
 import { useDispatch, useSelector } from 'react-redux'
-import {
-  getDateFrom,
-  getDateTo,
-  getDays,
-  getShedule,
-} from '../../store/shedule'
-import { capitalize, isNull } from 'lodash'
-import shallowEqual from 'shallowequal'
+import { getDateFrom, getDateTo, getDays, getShedule } from '../../store/shedule'
+import { isNull } from 'lodash'
+import { capitalize } from '../../utils/capitalize'
 
 const IndexCalendar = () => {
   const events = [
@@ -52,10 +40,17 @@ const IndexCalendar = () => {
   useEffect(() => {
     dispatch(getShedule())
   }, [])
-  //console.log(sheduleDays)
-
+  console.log(sheduleDays)
   const handleSelectSlot = ({ start, end }) => {
     if (view === Views.MONTH) {
+      //Если дата меньше текущей
+      if (moment(start).valueOf() < moment().valueOf()) {
+        return
+      }
+      //Если выходной
+      if (!allowedDays[`${capitalize(moment(start).format('dddd'))}`]) {
+        return
+      }
       setView(Views.DAY)
       setDate(moment(start))
       return
@@ -68,108 +63,103 @@ const IndexCalendar = () => {
       }
     }
   }
+  //const handleSelectEvent = useCallback((event) => <BasicModal />, [])
+
+  //Установка выходных дней
   const daysOfWeek = []
   const allowedDays = {}
-  //const handleSelectEvent = useCallback((event) => <BasicModal />, [])
+  sheduleDays && sheduleDays.map((item) => daysOfWeek.push(...Object.keys(item)))
   sheduleDays &&
-    sheduleDays.map(
-      (item) => daysOfWeek.push(...Object.keys(item)),
-      //console.log(item['Среда'] && item['Среда'].enabled),
-    )
-
-  sheduleDays &&
-    sheduleDays.map(
-      (day, i) => (allowedDays[daysOfWeek[i]] = day[daysOfWeek[i]].enabled),
-    )
+    sheduleDays.map((day, i) => (allowedDays[daysOfWeek[i]] = day[daysOfWeek[i]].enabled))
 
   //console.log(allowedDays)
-  const ColoredDateCellWrapper = ({ children, value }) => {
-    if (view === Views.MONTH) {
-      //  console.log(allowedDays[`${capitalize(moment(value).format('dddd'))}`])
-      //console.log(moment(value).format('dddd'))
-      //sheduleDays.map((s) => console.log(s[`${capitalize(moment(value).format('dddd'))}`]))
-      if (
-        value >= date_from &&
-        value < date_to &&
-        allowedDays[`${capitalize(moment(value).format('dddd'))}`]
-      ) {
-        return React.cloneElement(Children.only(children, value), {
-          style: {
-            ...children.style,
-            backgroundColor: 'lightgreen',
-          },
-        })
-      }
+  const ColoredDateCellWrapper = useMemo(
+    () => ({ children, value }) => {
+      if (view === Views.MONTH) {
+        if (
+          value >= date_from &&
+          value <= date_to &&
+          allowedDays[`${capitalize(moment(value).format('dddd'))}`]
+        ) {
+          return React.cloneElement(Children.only(children, value), {
+            style: {
+              ...children.style,
+              backgroundColor: 'lightgreen',
+            },
+          })
+        }
 
-      if (value >= date_from && isNull(date_to)) {
+        if (
+          value >= date_from &&
+          isNull(date_to) &&
+          allowedDays[`${capitalize(moment(value).format('dddd'))}`]
+        ) {
+          return React.cloneElement(Children.only(children, value), {
+            style: {
+              ...children.style,
+              backgroundColor: 'lightgreen',
+            },
+          })
+        }
+        if (
+          value >= date_from &&
+          isNull(date_to) &&
+          !allowedDays[`${capitalize(moment(value).format('dddd'))}`]
+        ) {
+          return React.cloneElement(Children.only(children, value), {
+            style: {
+              ...children.style,
+              backgroundColor: 'red',
+            },
+          })
+        }
+        if (
+          !allowedDays[`${capitalize(moment(value).format('dddd'))}`] &&
+          value >= date_from &&
+          value <= date_to
+        ) {
+          return React.cloneElement(Children.only(children, value), {
+            style: {
+              ...children.style,
+              backgroundColor: '#F08080',
+            },
+          })
+        }
         return React.cloneElement(Children.only(children, value), {
           style: {
             ...children.style,
-            backgroundColor: 'lightgreen',
+            backgroundColor: 'lightgrey',
           },
         })
       }
-      if (
-        !allowedDays[`${capitalize(moment(value).format('dddd'))}`] &&
-        value >= date_from &&
-        value < date_to
-      ) {
-        return React.cloneElement(Children.only(children, value), {
-          style: {
-            ...children.style,
-            backgroundColor: 'red',
-          },
-        })
+      if (view === Views.DAY) {
+        console.log(view)
       }
-      return React.cloneElement(Children.only(children, value), {
-        style: {
-          ...children.style,
-          backgroundColor: 'lightgrey',
-        },
-      })
-
-      /*return React.cloneElement(Children.only(children, value), {
-        style: {
-          ...children.style,
-          backgroundColor:
-            value >= date_from && value < date_to ? 'lightgreen' : 'lightgrey',
-          backgroundColor:
-            value >= date_from && isNull(date_to) ? 'lightgreen' : 'lightgrey',
-          backgroundColor:
-            allowedDays &&
-            allowedDays[`${capitalize(moment(value).format('dddd'))}`]
-              ? 'lightgreen'
-              : 'red',
-        }, 
-      })*/
-    }
-  }
+    },
+    [date_from, view],
+  )
 
   const onSelecting = useCallback((range) => {
     return false
   }, [])
 
   //Настройка внешнего вида события
-  const CustomEvent = (event) => {
+  const CustomEvent = useCallback((event) => {
     return <BasicModal event={event} />
     /* return (
       <span className="flex  justify-between flex-nowrap">
         <strong> {event.title} </strong>
       </span>
     ) */
-  }
-  //Заглавная буква в названии
-  function capitalize(str) {
-    return `${str.charAt(0).toUpperCase()}${str.slice(1)}`
-  }
+  }, [])
+
   //Форматы дат
   const formats = useMemo(
     () => ({
       dayHeaderFormat: (date) => moment(date).format('DD MMMM YYYY г.'),
       dayFormat: (date) => moment(date).format('DD MMMM'),
       agendaDateFormat: (date) => moment(date).format('DD MMMM'),
-      monthHeaderFormat: (date) =>
-        capitalize(moment(date).format('MMMM YYYY г.')),
+      monthHeaderFormat: (date) => capitalize(moment(date).format('MMMM YYYY г.')),
       dayRangeHeaderFormat: ({ start, end }) =>
         moment(start).format('DD MMMM') + ' - ' + moment(end).format('DD MMMM'),
       dateFormat: (date) => moment(date).format('D'),
