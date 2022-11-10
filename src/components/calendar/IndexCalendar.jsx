@@ -1,11 +1,4 @@
-import React, {
-  Children,
-  useCallback,
-  useId,
-  useMemo,
-  useState,
-  useEffect,
-} from 'react'
+import React, { Children, useCallback, useId, useMemo, useState, useEffect } from 'react'
 import { Calendar, momentLocalizer, Views } from 'react-big-calendar'
 import CustomToolbar from './CustomToolbar '
 import BasicModal from './Modal'
@@ -16,15 +9,11 @@ import 'moment-timezone'
 import 'moment/locale/ru'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
 import { useDispatch, useSelector } from 'react-redux'
-import {
-  getDateFrom,
-  getDateTo,
-  getDays,
-  getShedule,
-} from '../../store/shedule'
+import { getDateFrom, getDateTo, getDays, getShedule } from '../../store/shedule'
 import { isNull } from 'lodash'
 import { capitalize } from '../../utils/capitalize'
 import shallowEqual from 'shallowequal'
+import { getColorCels } from '../../utils/getColorCels'
 
 const IndexCalendar = () => {
   const events = [
@@ -60,9 +49,7 @@ const IndexCalendar = () => {
   // console.log(sheduleDays)
   const handleSelectSlot = ({ start, end }) => {
     const dayOfWeek = capitalize(moment(start).format('dddd'))
-    const today = sheduleDays.filter((day) =>
-      shallowEqual(Object.keys(day).join(), dayOfWeek),
-    )[0]
+    const today = sheduleDays.filter((day) => shallowEqual(Object.keys(day).join(), dayOfWeek))[0]
     setStartDay({
       hours: today[dayOfWeek].hoursStart,
       minutes: today[dayOfWeek].minutesStart,
@@ -99,12 +86,9 @@ const IndexCalendar = () => {
   //Установка выходных дней
   const daysOfWeek = []
   const allowedDays = {}
+  sheduleDays && sheduleDays.map((item) => daysOfWeek.push(...Object.keys(item)))
   sheduleDays &&
-    sheduleDays.map((item) => daysOfWeek.push(...Object.keys(item)))
-  sheduleDays &&
-    sheduleDays.map(
-      (day, i) => (allowedDays[daysOfWeek[i]] = day[daysOfWeek[i]].enabled),
-    )
+    sheduleDays.map((day, i) => (allowedDays[daysOfWeek[i]] = day[daysOfWeek[i]].enabled))
 
   //console.log(allowedDays)
   const ColoredDateCellWrapper = useMemo(
@@ -112,59 +96,10 @@ const IndexCalendar = () => {
       const dayOfWeek = capitalize(moment(value).format('dddd'))
 
       if (view === Views.MONTH) {
-        if (
-          value >= date_from &&
-          value <= date_to &&
-          allowedDays[`${dayOfWeek}`]
-        ) {
-          return React.cloneElement(Children.only(children, value), {
-            style: {
-              ...children.style,
-              backgroundColor: 'lightgreen',
-            },
-          })
-        }
-
-        if (
-          value >= date_from &&
-          isNull(date_to) &&
-          allowedDays[`${dayOfWeek}`]
-        ) {
-          return React.cloneElement(Children.only(children, value), {
-            style: {
-              ...children.style,
-              backgroundColor: 'lightgreen',
-            },
-          })
-        }
-        if (
-          value >= date_from &&
-          isNull(date_to) &&
-          !allowedDays[`${dayOfWeek}`]
-        ) {
-          return React.cloneElement(Children.only(children, value), {
-            style: {
-              ...children.style,
-              backgroundColor: 'red',
-            },
-          })
-        }
-        if (
-          !allowedDays[`${dayOfWeek}`] &&
-          value >= date_from &&
-          value <= date_to
-        ) {
-          return React.cloneElement(Children.only(children, value), {
-            style: {
-              ...children.style,
-              backgroundColor: '#F08080',
-            },
-          })
-        }
         return React.cloneElement(Children.only(children, value), {
           style: {
             ...children.style,
-            backgroundColor: 'lightgrey',
+            backgroundColor: getColorCels(value, date_from, date_to, allowedDays),
           },
         })
       }
@@ -192,11 +127,10 @@ const IndexCalendar = () => {
   //Форматы дат
   const formats = useMemo(
     () => ({
-      dayHeaderFormat: (date) => moment(date).format('DD MMMM YYYY г.'),
+      dayHeaderFormat: (date) => moment(date).format('D re MMMM YYYY г.'),
       dayFormat: (date) => moment(date).format('DD MMMM'),
       agendaDateFormat: (date) => moment(date).format('DD MMMM'),
-      monthHeaderFormat: (date) =>
-        capitalize(moment(date).format('MMMM YYYY г.')),
+      monthHeaderFormat: (date) => capitalize(moment(date).format('MMMM YYYY г.')),
       dayRangeHeaderFormat: ({ start, end }) =>
         moment(start).format('DD MMMM') + ' - ' + moment(end).format('DD MMMM'),
       dateFormat: (date) => moment(date).format('D'),

@@ -29,10 +29,9 @@ const authService = {
       grand_type: 'refresh_token',
       refresh_token: localStorageService.getRefreshToken(),
     })
-    console.log(data)
+
     return data
   },
 }
 
 export default authService
-
