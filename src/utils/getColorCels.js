@@ -1,5 +1,6 @@
 import { isNull } from 'lodash'
 import moment from 'moment'
+import shallowEqual from 'shallowequal'
 import { capitalize } from './capitalize'
 const CURRENT_DATE = moment().toDate()
 
@@ -11,6 +12,12 @@ export function getColorCels(value, date_from, date_to, allowedDays) {
     value <= date_to &&
     allowedDays[`${dayOfWeek}`] &&
     value >= CURRENT_DATE
+  ) {
+    return 'lightgreen'
+  }
+
+  if (
+    moment(value).format('DD-YY-MMMM') === moment(date_to).format('DD-YY-MMMM')
   ) {
     return 'lightgreen'
   }

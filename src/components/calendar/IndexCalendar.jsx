@@ -1,4 +1,11 @@
-import React, { Children, useCallback, useId, useMemo, useState, useEffect } from 'react'
+import React, {
+  Children,
+  useCallback,
+  useId,
+  useMemo,
+  useState,
+  useEffect,
+} from 'react'
 import { Calendar, momentLocalizer, Views } from 'react-big-calendar'
 import CustomToolbar from './CustomToolbar '
 import BasicModal from './Modal'
@@ -9,11 +16,16 @@ import 'moment-timezone'
 import 'moment/locale/ru'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
 import { useDispatch, useSelector } from 'react-redux'
-import { getDateFrom, getDateTo, getDays, getShedule } from '../../store/shedule'
-import { isNull } from 'lodash'
+import {
+  getDateFrom,
+  getDateTo,
+  getDays,
+  getShedule,
+} from '../../store/shedule'
 import { capitalize } from '../../utils/capitalize'
-import shallowEqual from 'shallowequal'
+
 import { getColorCels } from '../../utils/getColorCels'
+import { setWorkTime } from './functions'
 
 const IndexCalendar = () => {
   const events = [
@@ -32,15 +44,34 @@ const IndexCalendar = () => {
   const [view, setView] = useState(Views.MONTH)
   const [date, setDate] = useState(new Date())
   const [myEvents, setEvents] = useState(events)
-  const [startDay, setStartDay] = useState({ hours: 0, minutes: 0 })
-  const [endDay, setEndDay] = useState({ hours: 23, minutes: 59 })
-  const [receiptTime, setsReceiptTime] = useState(5)
+  const [startDay, setStartDay] = useState({
+    hours: 0,
+    minutes: 0,
+  })
+  const [endDay, setEndDay] = useState({
+    hours: 23,
+    minutes: 59,
+  })
+  const [receiptTime, setReceiptTime] = useState(5)
 
   const onView = (newView) => setView(newView)
-  const onNavigate = (newDate) => setDate(newDate)
+  const onNavigate = (newDate) => {
+    setWorkTime(sheduleDays, newDate, setStartDay, setEndDay, setReceiptTime)
+    setDate(newDate)
+  }
 
   const localizer = momentLocalizer(moment)
   const CURRENT_DATE = moment().toDate()
+
+  //Установка выходных дней
+  const daysOfWeek = []
+  const allowedDays = {}
+  sheduleDays &&
+    sheduleDays.map((item) => daysOfWeek.push(...Object.keys(item)))
+  sheduleDays &&
+    sheduleDays.map(
+      (day, i) => (allowedDays[daysOfWeek[i]] = day[daysOfWeek[i]].enabled),
+    )
 
   useEffect(() => {
     dispatch(getShedule())
@@ -48,18 +79,18 @@ const IndexCalendar = () => {
 
   // console.log(sheduleDays)
   const handleSelectSlot = ({ start, end }) => {
-    const dayOfWeek = capitalize(moment(start).format('dddd'))
-    const today = sheduleDays.filter((day) => shallowEqual(Object.keys(day).join(), dayOfWeek))[0]
-    setStartDay({
-      hours: today[dayOfWeek].hoursStart,
-      minutes: today[dayOfWeek].minutesStart,
-    })
-    setEndDay({
-      hours: today[dayOfWeek].hoursEnd,
-      minutes: today[dayOfWeek].minutesEnd,
-    })
-    setsReceiptTime(today[dayOfWeek].receiptTime)
+    setWorkTime(sheduleDays, start, setStartDay, setEndDay, setReceiptTime)
 
+    if (view === Views.DAY || view === Views.MONTH) {
+      if (
+        moment(start).valueOf() >
+        moment(date_to)
+          .endOf('day')
+          .valueOf()
+      ) {
+        return
+      }
+    }
     if (view === Views.MONTH) {
       //Если дата меньше текущей
       if (moment(start).valueOf() < moment().valueOf()) {
@@ -83,54 +114,39 @@ const IndexCalendar = () => {
   }
   //const handleSelectEvent = useCallback((event) => <BasicModal />, [])
 
-  //Установка выходных дней
-  const daysOfWeek = []
-  const allowedDays = {}
-  sheduleDays && sheduleDays.map((item) => daysOfWeek.push(...Object.keys(item)))
-  sheduleDays &&
-    sheduleDays.map((day, i) => (allowedDays[daysOfWeek[i]] = day[daysOfWeek[i]].enabled))
-
-  //console.log(allowedDays)
-  const ColoredDateCellWrapper = useMemo(
-    () => ({ children, value }) => {
-      const dayOfWeek = capitalize(moment(value).format('dddd'))
-
-      if (view === Views.MONTH) {
-        return React.cloneElement(Children.only(children, value), {
-          style: {
-            ...children.style,
-            backgroundColor: getColorCels(value, date_from, date_to, allowedDays),
-          },
-        })
-      }
-      if (view === Views.DAY) {
-        //console.log(capitalize(moment(value).format('dddd')))
-      }
-    },
-    [date_from, view],
-  )
+  const ColoredDateCellWrapper = ({ children, value }) => {
+    if (view === Views.MONTH) {
+      return React.cloneElement(Children.only(children, value), {
+        style: {
+          ...children.style,
+          backgroundColor: getColorCels(value, date_from, date_to, allowedDays),
+        },
+      })
+    }
+  }
 
   const onSelecting = useCallback((range) => {
     return false
   }, [])
 
   //Настройка внешнего вида события
-  const CustomEvent = useCallback((event) => {
+  const CustomEvent = (event) => {
     return <BasicModal event={event} />
     /* return (
       <span className="flex  justify-between flex-nowrap">
         <strong> {event.title} </strong>
       </span>
     ) */
-  }, [])
+  }
 
   //Форматы дат
   const formats = useMemo(
     () => ({
-      dayHeaderFormat: (date) => moment(date).format('D re MMMM YYYY г.'),
+      dayHeaderFormat: (date) => moment(date).format('DD MMMM YYYY г.'),
       dayFormat: (date) => moment(date).format('DD MMMM'),
       agendaDateFormat: (date) => moment(date).format('DD MMMM'),
-      monthHeaderFormat: (date) => capitalize(moment(date).format('MMMM YYYY г.')),
+      monthHeaderFormat: (date) =>
+        capitalize(moment(date).format('MMMM YYYY г.')),
       dayRangeHeaderFormat: ({ start, end }) =>
         moment(start).format('DD MMMM') + ' - ' + moment(end).format('DD MMMM'),
       dateFormat: (date) => moment(date).format('D'),
@@ -139,6 +155,12 @@ const IndexCalendar = () => {
     }),
     [],
   )
+  const dayPropGetter = (date) => ({
+    style: {
+      backgroundColor: getColorCels(date, date_from, date_to, allowedDays),
+    },
+  })
+
   // Время начала рабочего дня
   const min = new Date(
     CURRENT_DATE.getFullYear(),
@@ -184,6 +206,7 @@ const IndexCalendar = () => {
       max={max}
       min={min}
       onSelecting={onSelecting}
+      dayPropGetter={dayPropGetter}
     />
   )
 }
