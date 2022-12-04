@@ -26,6 +26,7 @@ import { capitalize } from '../../utils/capitalize'
 
 import { getColorCels } from '../../utils/getColorCels'
 import { setWorkTime } from './functions'
+import PatientOrderModal from './patientOrderModal'
 
 const IndexCalendar = () => {
   const events = [
@@ -53,6 +54,11 @@ const IndexCalendar = () => {
     minutes: 59,
   })
   const [receiptTime, setReceiptTime] = useState(5)
+  const [isOrderModalOpen, setIsOrderModalOpen] = useState(false)
+  const [orderTime, setOrderTime] = useState({
+    start: moment().toDate(),
+    end: moment().toDate(),
+  })
 
   const onView = (newView) => setView(newView)
   const onNavigate = (newDate) => {
@@ -77,7 +83,6 @@ const IndexCalendar = () => {
     dispatch(getShedule())
   }, [])
 
-  // console.log(sheduleDays)
   const handleSelectSlot = ({ start, end }) => {
     setWorkTime(sheduleDays, start, setStartDay, setEndDay, setReceiptTime)
 
@@ -104,15 +109,11 @@ const IndexCalendar = () => {
       setDate(moment(start))
       return
     }
-    if (moment(start).valueOf() >= moment().valueOf()) {
-      const title = window.prompt('Новое событие')
-
-      if (title) {
-        setEvents((prev) => [...prev, { start, end, title }])
-      }
+    if (allowedDays[`${capitalize(moment(start).format('dddd'))}`]) {
+      setOrderTime({ start, end })
+      setIsOrderModalOpen(true)
     }
   }
-  //const handleSelectEvent = useCallback((event) => <BasicModal />, [])
 
   const ColoredDateCellWrapper = ({ children, value }) => {
     if (view === Views.MONTH) {
@@ -132,11 +133,6 @@ const IndexCalendar = () => {
   //Настройка внешнего вида события
   const CustomEvent = (event) => {
     return <BasicModal event={event} />
-    /* return (
-      <span className="flex  justify-between flex-nowrap">
-        <strong> {event.title} </strong>
-      </span>
-    ) */
   }
 
   //Форматы дат
@@ -180,34 +176,43 @@ const IndexCalendar = () => {
   )
 
   return (
-    <Calendar
-      formats={formats}
-      culture={'ru-RU'}
-      localizer={localizer}
-      defaultDate={new Date()}
-      date={date}
-      view={view}
-      defaultView={view}
-      events={myEvents}
-      style={{ height: '100vh' }}
-      onView={onView}
-      onNavigate={onNavigate}
-      views={['month', 'day', 'work_week']}
-      selectable
-      onSelectSlot={handleSelectSlot} //запись события
-      //onSelectEvent={handleSelectEvent}
-      components={{
-        dateCellWrapper: ColoredDateCellWrapper,
-        toolbar: CustomToolbar,
-        event: CustomEvent,
-      }}
-      step={receiptTime}
-      timeslots={1}
-      max={max}
-      min={min}
-      onSelecting={onSelecting}
-      dayPropGetter={dayPropGetter}
-    />
+    <>
+      <Calendar
+        formats={formats}
+        culture={'ru-RU'}
+        localizer={localizer}
+        defaultDate={new Date()}
+        date={date}
+        view={view}
+        defaultView={view}
+        events={myEvents}
+        style={{ height: '100vh' }}
+        onView={onView}
+        onNavigate={onNavigate}
+        views={['month', 'day' /* , 'work_week' */]}
+        selectable
+        onSelectSlot={handleSelectSlot} //запись события
+        //onSelectEvent={handleSelectEvent}
+        components={{
+          dateCellWrapper: ColoredDateCellWrapper,
+          toolbar: CustomToolbar,
+          event: CustomEvent,
+        }}
+        step={receiptTime}
+        timeslots={1}
+        max={max}
+        min={min}
+        onSelecting={onSelecting}
+        dayPropGetter={dayPropGetter}
+      />
+      <PatientOrderModal
+        isOpen={isOrderModalOpen}
+        setIsOrderModalOpen={setIsOrderModalOpen}
+        setEvents={setEvents}
+        myEvents={myEvents}
+        orderTime={orderTime}
+      />
+    </>
   )
 }
 

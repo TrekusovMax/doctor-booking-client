@@ -152,15 +152,6 @@ const SheduleList = () => {
               sheduleId={sheduleId}
             />
           ))}
-
-          {/* {days.map((d, i) => (
-            <SheduleDay
-              setShedule={setShedule}
-              shedule={shedule}
-              key={i}
-              day={d}
-            />
-          ))} */}
         </Paper>
       ) : (
         'Загрузка...'

@@ -35,7 +35,7 @@ const PatientList = () => {
     <Box
       sx={{
         height: '100vh',
-        width: '80%',
+        width: '100%',
         marginX: 'auto',
         '& .pending': {
           backgroundColor: '#f0e68c',

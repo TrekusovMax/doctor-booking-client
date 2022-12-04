@@ -25,9 +25,15 @@ export default function BasicModal({ event }) {
   const [open, setOpen] = React.useState(false)
   const handleOpen = () => setOpen(true)
   const handleClose = () => setOpen(false)
-  const date = moment(event.event.start).format('DD.MM.YYYY').toString()
-  const timeStart = moment(event.event.start).format('HH:mm').toString()
-  const timeEnd = moment(event.event.end).format('HH:mm').toString()
+  const date = moment(event.event.start)
+    .format('DD.MM.YYYY')
+    .toString()
+  const timeStart = moment(event.event.start)
+    .format('HH:mm')
+    .toString()
+  const timeEnd = moment(event.event.end)
+    .format('HH:mm')
+    .toString()
 
   return (
     <div>
@@ -38,27 +44,39 @@ export default function BasicModal({ event }) {
         open={open}
         onClose={handleClose}
         aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description">
+        aria-describedby="modal-modal-description"
+      >
         <Box sx={style}>
-          <Typography id="modal-modal-title" variant="h6" component="h2" align="center">
+          <Typography
+            id="modal-modal-title"
+            variant="h6"
+            component="h2"
+            align="center"
+          >
             {event.title}
           </Typography>
           <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-            Запись на приём: <strong>{date} г.</strong> c {timeStart} до {timeEnd}
+            Запись на приём: <strong>{date} г.</strong> c {timeStart} до{' '}
+            {timeEnd}
+          </Typography>
+          <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+            Цель приёма: {event.event.diagnosis}
           </Typography>
           <div className="flex flex-row justify-around mt-4">
             <Button
               onClick={handleClose}
               color="error"
               variant="contained"
-              endIcon={<DeleteIcon />}>
+              endIcon={<DeleteIcon />}
+            >
               Удалить
             </Button>
             <Button
               onClick={handleClose}
               color="success"
               variant="contained"
-              endIcon={<DoneIcon />}>
+              endIcon={<DoneIcon />}
+            >
               Завершить
             </Button>
           </div>

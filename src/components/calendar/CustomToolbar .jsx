@@ -53,9 +53,9 @@ const CustomToolbar = (props) => {
         <button type="button" onClick={goToDayView}>
           День
         </button>
-        <button type="button" onClick={goToWeekView}>
+        {/*  <button type="button" onClick={goToWeekView}>
           Рабочая неделя
-        </button>
+        </button> */}
       </span>
     </div>
   )
