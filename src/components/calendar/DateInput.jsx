@@ -8,14 +8,20 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 
-export default function DateInput({ setOrderDay, orderDay, error }) {
+export default function DateInput({
+  setDateOfBirth,
+  orderDay,
+  error,
+  setDateError,
+}) {
   const locale = 'ru'
   const date = dayjs(orderDay).format('MM.DD.YYYY')
   const [datePickerValue, setDatePickerValue] = useState(date)
 
   const handleChange = (newValue) => {
+    setDateError(!newValue ? true : false)
     setDatePickerValue(newValue)
-    setOrderDay(dayjs(newValue).valueOf())
+    setDateOfBirth(dayjs(newValue).valueOf())
   }
 
   return (

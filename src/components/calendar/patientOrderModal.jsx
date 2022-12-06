@@ -7,22 +7,10 @@ import Button from '@mui/material/Button'
 import DoneIcon from '@mui/icons-material/Done'
 import { MenuItem, TextField } from '@mui/material'
 import DateInput from './DateInput'
-import { randomId } from '@mui/x-data-grid-generator'
-
-const diagnosisList = [
-  {
-    value: 'Глаукома',
-    label: 'Глаукома',
-  },
-  {
-    value: 'Катаракта',
-    label: 'Катаракта',
-  },
-  {
-    value: 'Консультация',
-    label: 'Консультация',
-  },
-]
+import { getUserCurrentData } from '../../store/users'
+import { useSelector } from 'react-redux'
+import { diagnosisList } from '../../utils/diagnosis'
+import moment from 'moment/moment'
 
 export default function PatientOrderModal({
   isOpen,
@@ -31,16 +19,14 @@ export default function PatientOrderModal({
   myEvents,
   orderTime,
 }) {
+  const currentUser = useSelector(getUserCurrentData())
   const [dateError, setDateError] = useState(false)
   const [name, setName] = useState('')
-  const [orderDay, setOrderDay] = useState(new Date())
+  const [dateOfBirth, setDateOfBirth] = useState(new Date())
   const [diagnosis, setDiagnosis] = useState(diagnosisList[2].value)
   const [errName, setErrName] = useState(false)
   const handleListChange = (event) => {
     setDiagnosis(event.target.value)
-  }
-  const handleChange = (newValue) => {
-    setOrderDay(newValue)
   }
 
   const handleWrite = () => {
@@ -48,18 +34,31 @@ export default function PatientOrderModal({
       setErrName(true)
       return
     }
+    if (!dateOfBirth) {
+      setDateError(true)
+      return
+    }
     const event = {
-      id: randomId(),
       ...orderTime,
-      title: name,
-      date: orderDay,
+      name,
+      dateOfBirth,
       diagnosis,
+      doctor: currentUser.name,
     }
     myEvents.push(event)
     const newEvent = myEvents
     setEvents(newEvent)
     setName('')
     setIsOrderModalOpen(false)
+    console.log({
+      start: moment(orderTime.start).valueOf(),
+      end: moment(orderTime.end).valueOf(),
+      //...orderTime,
+      name,
+      dateOfBirth,
+      diagnosis,
+      doctor: currentUser.name,
+    })
   }
   const handleClose = () => {
     setIsOrderModalOpen(false)
@@ -106,9 +105,10 @@ export default function PatientOrderModal({
               onChange={handleChangeName}
             />
             <DateInput
-              orderDay={orderDay}
-              setOrderDay={setOrderDay}
+              dateOfBirth={dateOfBirth}
+              setDateOfBirth={setDateOfBirth}
               error={dateError}
+              setDateError={setDateError}
             />
             <TextField
               //defaultValue={diagnosis[0].value}
@@ -130,7 +130,7 @@ export default function PatientOrderModal({
               color="success"
               variant="contained"
               endIcon={<DoneIcon />}
-              disabled={errName}
+              disabled={errName && dateError}
             >
               Записать
             </Button>
