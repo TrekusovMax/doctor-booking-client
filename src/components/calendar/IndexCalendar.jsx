@@ -1,7 +1,6 @@
 import React, {
   Children,
   useCallback,
-  useId,
   useMemo,
   useState,
   useEffect,
@@ -27,24 +26,27 @@ import { capitalize } from '../../utils/capitalize'
 import { getColorCels } from '../../utils/getColorCels'
 import { setWorkTime } from './functions'
 import PatientOrderModal from './patientOrderModal'
+import { getOrders, getOrdersList } from '../../store/order'
 
 const IndexCalendar = () => {
-  const events = [
-    {
-      id: useId(),
-      start: moment().toDate(),
-      end: moment().toDate(),
-      title: 'Some title',
-    },
-  ]
   const dispatch = useDispatch()
+
+  const [myEvents, setEvents] = useState([
+    /* {
+      end: moment('2022-12-12T09:30:00.000Z').toDate(),
+      id: '639377e186c46f3ffa8f8a1e',
+      start: moment('2022-12-12T09:15:00.000Z').toDate(),
+      title: 'asdasdasd',
+    }, */
+  ])
+  const ordersList = useSelector(getOrdersList())
   const date_from = useSelector(getDateFrom())
   const date_to = useSelector(getDateTo())
   const sheduleDays = useSelector(getDays())
 
   const [view, setView] = useState(Views.MONTH)
   const [date, setDate] = useState(new Date())
-  const [myEvents, setEvents] = useState(events)
+
   const [startDay, setStartDay] = useState({
     hours: 0,
     minutes: 0,
@@ -81,7 +83,18 @@ const IndexCalendar = () => {
 
   useEffect(() => {
     dispatch(getShedule())
+    dispatch(getOrders())
   }, [])
+  useEffect(() => {
+    const newList = ordersList.map((item) => {
+      return {
+        ...item,
+        start: moment(item.start).toDate(),
+        end: moment(item.end).toDate(),
+      }
+    })
+    setEvents(newList)
+  }, [ordersList])
 
   const handleSelectSlot = ({ start, end }) => {
     setWorkTime(sheduleDays, start, setStartDay, setEndDay, setReceiptTime)

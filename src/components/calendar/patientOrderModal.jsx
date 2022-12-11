@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useId } from 'react'
 import Box from '@mui/material/Box'
 import './Style.css'
 import Typography from '@mui/material/Typography'
@@ -8,9 +8,11 @@ import DoneIcon from '@mui/icons-material/Done'
 import { MenuItem, TextField } from '@mui/material'
 import DateInput from './DateInput'
 import { getUserCurrentData } from '../../store/users'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { diagnosisList } from '../../utils/diagnosis'
 import moment from 'moment/moment'
+import { createOrder } from '../../store/order'
+import { idID } from '@mui/material/locale'
 
 export default function PatientOrderModal({
   isOpen,
@@ -19,6 +21,7 @@ export default function PatientOrderModal({
   myEvents,
   orderTime,
 }) {
+  const dispatch = useDispatch()
   const currentUser = useSelector(getUserCurrentData())
   const [dateError, setDateError] = useState(false)
   const [name, setName] = useState('')
@@ -38,19 +41,24 @@ export default function PatientOrderModal({
       setDateError(true)
       return
     }
+
     const event = {
-      ...orderTime,
+      start: orderTime.start,
+      end: orderTime.end,
       name,
+      title: name,
       dateOfBirth,
       diagnosis,
       doctor: currentUser.name,
     }
-    myEvents.push(event)
-    const newEvent = myEvents
-    setEvents(newEvent)
+
+    const eventArray = []
+    eventArray.push(event)
+    setEvents(eventArray)
     setName('')
     setIsOrderModalOpen(false)
-    console.log({
+    dispatch(createOrder(event))
+    /* console.log({
       start: moment(orderTime.start).valueOf(),
       end: moment(orderTime.end).valueOf(),
       //...orderTime,
@@ -58,7 +66,7 @@ export default function PatientOrderModal({
       dateOfBirth,
       diagnosis,
       doctor: currentUser.name,
-    })
+    }) */
   }
   const handleClose = () => {
     setIsOrderModalOpen(false)
