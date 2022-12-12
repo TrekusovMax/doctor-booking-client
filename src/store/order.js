@@ -47,7 +47,6 @@ export const createOrder = (payload) => async (dispatch) => {
   try {
     const content = await orderService.create(payload)
     dispatch(orderReceved(content))
-    //getOrders()
   } catch (error) {
     dispatch(orderRequestFiled(error))
   }

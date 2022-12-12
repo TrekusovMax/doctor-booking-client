@@ -1,24 +1,24 @@
-import React, { useState, useId } from 'react'
-import Box from '@mui/material/Box'
+import React, { useState } from 'react'
 import './Style.css'
-import Typography from '@mui/material/Typography'
-import Modal from '@mui/material/Modal'
-import Button from '@mui/material/Button'
 import DoneIcon from '@mui/icons-material/Done'
-import { MenuItem, TextField } from '@mui/material'
+import {
+  MenuItem,
+  TextField,
+  Button,
+  Modal,
+  Typography,
+  Box,
+} from '@mui/material'
 import DateInput from './DateInput'
 import { getUserCurrentData } from '../../store/users'
 import { useDispatch, useSelector } from 'react-redux'
 import { diagnosisList } from '../../utils/diagnosis'
-import moment from 'moment/moment'
 import { createOrder } from '../../store/order'
-import { idID } from '@mui/material/locale'
 
 export default function PatientOrderModal({
   isOpen,
   setIsOrderModalOpen,
   setEvents,
-  myEvents,
   orderTime,
 }) {
   const dispatch = useDispatch()
@@ -58,15 +58,6 @@ export default function PatientOrderModal({
     setName('')
     setIsOrderModalOpen(false)
     dispatch(createOrder(event))
-    /* console.log({
-      start: moment(orderTime.start).valueOf(),
-      end: moment(orderTime.end).valueOf(),
-      //...orderTime,
-      name,
-      dateOfBirth,
-      diagnosis,
-      doctor: currentUser.name,
-    }) */
   }
   const handleClose = () => {
     setIsOrderModalOpen(false)
@@ -83,9 +74,7 @@ export default function PatientOrderModal({
   return (
     <div>
       <Modal
-        //className="flex flex-col content-around"
         open={isOpen}
-        //open={true}
         onClose={handleClose}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
@@ -119,7 +108,6 @@ export default function PatientOrderModal({
               setDateError={setDateError}
             />
             <TextField
-              //defaultValue={diagnosis[0].value}
               id="outlined-select-diagnosis"
               select
               label="Цель посещения"

@@ -6,7 +6,7 @@ const httpService = axios.create({
 })
 const orderService = {
   get: async () => {
-    const { data } = await httpService.get('getOrders')
+    const { data } = await httpService.get('getAllOrders')
     return data
   },
   create: async (payload) => {

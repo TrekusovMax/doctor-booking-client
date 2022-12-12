@@ -21,6 +21,7 @@ const CustomToolbar = (props) => {
   const goToMonthView = () => {
     props.onView('month')
   }
+  console.log(props)
 
   return (
     <div className="rbc-toolbar">

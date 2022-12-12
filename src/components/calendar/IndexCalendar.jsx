@@ -31,14 +31,7 @@ import { getOrders, getOrdersList } from '../../store/order'
 const IndexCalendar = () => {
   const dispatch = useDispatch()
 
-  const [myEvents, setEvents] = useState([
-    /* {
-      end: moment('2022-12-12T09:30:00.000Z').toDate(),
-      id: '639377e186c46f3ffa8f8a1e',
-      start: moment('2022-12-12T09:15:00.000Z').toDate(),
-      title: 'asdasdasd',
-    }, */
-  ])
+  const [myEvents, setEvents] = useState([])
   const ordersList = useSelector(getOrdersList())
   const date_from = useSelector(getDateFrom())
   const date_to = useSelector(getDateTo())
@@ -222,7 +215,6 @@ const IndexCalendar = () => {
         isOpen={isOrderModalOpen}
         setIsOrderModalOpen={setIsOrderModalOpen}
         setEvents={setEvents}
-        myEvents={myEvents}
         orderTime={orderTime}
       />
     </>
