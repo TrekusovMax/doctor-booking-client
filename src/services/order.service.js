@@ -5,8 +5,12 @@ const httpService = axios.create({
   baseURL: config.apiEndpoint + '/order/',
 })
 const orderService = {
-  get: async () => {
+  getAll: async () => {
     const { data } = await httpService.get('getAllOrders')
+    return data
+  },
+  getOnMonth: async (month, year) => {
+    const { data } = await httpService.get(`getOrdersOnMonth/${month}/${year}`)
     return data
   },
   create: async (payload) => {

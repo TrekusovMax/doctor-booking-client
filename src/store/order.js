@@ -9,6 +9,7 @@ const ordersSlice = createSlice({
     isLoading: true,
     error: null,
     dataLoaded: false,
+    date: { month: null, year: null },
   },
 
   reducers: {
@@ -27,16 +28,40 @@ const ordersSlice = createSlice({
       state.error = action.payload
       state.isLoading = false
     },
+    setOrderDate: (state, action) => {
+      state.date = action.payload
+    },
   },
 })
 
 const { reducer: ordersReducer, actions } = ordersSlice
-const { orderRequested, orderReceved, orderRequestFiled } = actions
+const {
+  orderRequested,
+  orderReceved,
+  orderRequestFiled,
+  setOrderDate,
+} = actions
 
 export const getOrders = () => async (dispatch) => {
   dispatch(orderRequested())
   try {
-    const content = await orderService.get()
+    const content = await orderService.getAll()
+    dispatch(orderReceved(content))
+  } catch (error) {
+    dispatch(orderRequestFiled(error))
+  }
+}
+export const setCurrentMonth = (month, year) => async (dispatch) => {
+  try {
+    dispatch(setOrderDate({ month, year }))
+  } catch (error) {
+    dispatch(orderRequestFiled(error))
+  }
+}
+export const getOrdersOnMonth = (month, year) => async (dispatch) => {
+  dispatch(orderRequested())
+  try {
+    const content = await orderService.getOnMonth(month, year)
     dispatch(orderReceved(content))
   } catch (error) {
     dispatch(orderRequestFiled(error))
@@ -53,5 +78,6 @@ export const createOrder = (payload) => async (dispatch) => {
 }
 
 export const getOrdersList = () => (state) => state.orders.orders
+export const getCurrentMonth = () => (state) => state.orders.date
 
 export default ordersReducer

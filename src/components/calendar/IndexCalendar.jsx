@@ -26,7 +26,13 @@ import { capitalize } from '../../utils/capitalize'
 import { getColorCels } from '../../utils/getColorCels'
 import { setWorkTime } from './functions'
 import PatientOrderModal from './patientOrderModal'
-import { getOrders, getOrdersList } from '../../store/order'
+import {
+  getCurrentMonth,
+  getOrders,
+  getOrdersList,
+  getOrdersOnMonth,
+  setCurrentMonth,
+} from '../../store/order'
 
 const IndexCalendar = () => {
   const dispatch = useDispatch()
@@ -36,6 +42,7 @@ const IndexCalendar = () => {
   const date_from = useSelector(getDateFrom())
   const date_to = useSelector(getDateTo())
   const sheduleDays = useSelector(getDays())
+  const getMonth = useSelector(getCurrentMonth())
 
   const [view, setView] = useState(Views.MONTH)
   const [date, setDate] = useState(new Date())
@@ -61,6 +68,16 @@ const IndexCalendar = () => {
     setDate(newDate)
   }
 
+  const month = new Date(date).getMonth() + 1
+  const year = new Date(date).getFullYear()
+
+  useEffect(() => {
+    dispatch(setCurrentMonth(month, year))
+    dispatch(getOrdersOnMonth(month, year))
+  }, [month, year])
+  //useMemo(() => ), [month, year])
+
+  console.log(getMonth)
   const localizer = momentLocalizer(moment)
   const CURRENT_DATE = moment().toDate()
 
@@ -76,7 +93,7 @@ const IndexCalendar = () => {
 
   useEffect(() => {
     dispatch(getShedule())
-    dispatch(getOrders())
+    // dispatch(getOrders())
   }, [])
   useEffect(() => {
     const newList = ordersList.map((item) => {

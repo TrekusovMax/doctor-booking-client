@@ -1,7 +1,6 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 
 import 'react-big-calendar/lib/css/react-big-calendar.css'
-
 const CustomToolbar = (props) => {
   const goToBack = () => {
     props.onNavigate('PREV')
@@ -21,7 +20,6 @@ const CustomToolbar = (props) => {
   const goToMonthView = () => {
     props.onView('month')
   }
-  console.log(props)
 
   return (
     <div className="rbc-toolbar">
