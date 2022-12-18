@@ -1,4 +1,4 @@
-import { createAction, createSlice } from '@reduxjs/toolkit'
+import { createSlice } from '@reduxjs/toolkit'
 import { isArray } from 'lodash'
 import orderService from '../services/order.service'
 
@@ -28,6 +28,14 @@ const ordersSlice = createSlice({
       state.error = action.payload
       state.isLoading = false
     },
+    orderDeleted: (state, action) => {
+      state.isLoading = false
+      state.dataLoaded = true
+    },
+    orderStatusChanged: (state, action) => {
+      state.isLoading = false
+      state.dataLoaded = true
+    },
     setOrderDate: (state, action) => {
       state.date = action.payload
     },
@@ -40,6 +48,8 @@ const {
   orderReceved,
   orderRequestFiled,
   setOrderDate,
+  orderStatusChanged,
+  orderDeleted,
 } = actions
 
 export const getOrders = () => async (dispatch) => {
@@ -72,6 +82,26 @@ export const createOrder = (payload) => async (dispatch) => {
   try {
     const content = await orderService.create(payload)
     dispatch(orderReceved(content))
+  } catch (error) {
+    dispatch(orderRequestFiled(error))
+  }
+}
+export const deleteOrder = (payload) => async (dispatch) => {
+  dispatch(orderRequested())
+  try {
+    await orderService.deleteOrder(payload.id)
+    dispatch(orderDeleted())
+    dispatch(getOrdersOnMonth(payload.month, payload.year))
+  } catch (error) {
+    dispatch(orderRequestFiled(error))
+  }
+}
+export const changeStatusOrder = (payload) => async (dispatch) => {
+  dispatch(orderRequested())
+  try {
+    await orderService.changeStatus(payload.id)
+    dispatch(orderStatusChanged())
+    dispatch(getOrdersOnMonth(payload.month, payload.year))
   } catch (error) {
     dispatch(orderRequestFiled(error))
   }

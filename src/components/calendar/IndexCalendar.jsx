@@ -28,7 +28,6 @@ import { setWorkTime } from './functions'
 import PatientOrderModal from './patientOrderModal'
 import {
   getCurrentMonth,
-  getOrders,
   getOrdersList,
   getOrdersOnMonth,
   setCurrentMonth,
@@ -55,6 +54,7 @@ const IndexCalendar = () => {
     hours: 23,
     minutes: 59,
   })
+
   const [receiptTime, setReceiptTime] = useState(5)
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false)
   const [orderTime, setOrderTime] = useState({
@@ -75,11 +75,8 @@ const IndexCalendar = () => {
     dispatch(setCurrentMonth(month, year))
     dispatch(getOrdersOnMonth(month, year))
   }, [month, year])
-  //useMemo(() => ), [month, year])
 
-  console.log(getMonth)
   const localizer = momentLocalizer(moment)
-  const CURRENT_DATE = moment().toDate()
 
   //Установка выходных дней
   const daysOfWeek = []
@@ -154,7 +151,7 @@ const IndexCalendar = () => {
   }, [])
 
   //Настройка внешнего вида события
-  const CustomEvent = (event) => {
+  const CustomEvent = ({ event }) => {
     return <BasicModal event={event} />
   }
 
@@ -182,18 +179,30 @@ const IndexCalendar = () => {
 
   // Время начала рабочего дня
   const min = new Date(
-    CURRENT_DATE.getFullYear(),
-    CURRENT_DATE.getMonth(),
-    CURRENT_DATE.getDate(),
+    moment()
+      .toDate()
+      .getFullYear(),
+    moment()
+      .toDate()
+      .getMonth(),
+    moment()
+      .toDate()
+      .getDate(),
     startDay.hours,
     startDay.minutes,
   )
 
   // Время окончания рабочего дня
   const max = new Date(
-    CURRENT_DATE.getFullYear(),
-    CURRENT_DATE.getMonth(),
-    CURRENT_DATE.getDate(),
+    moment()
+      .toDate()
+      .getFullYear(),
+    moment()
+      .toDate()
+      .getMonth(),
+    moment()
+      .toDate()
+      .getDate(),
     endDay.hours,
     endDay.minutes,
   )

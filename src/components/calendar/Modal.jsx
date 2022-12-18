@@ -1,12 +1,11 @@
-import * as React from 'react'
-import Box from '@mui/material/Box'
+import React, { useState } from 'react'
+import { Box, Typography, Modal, Button } from '@mui/material'
 
-import Typography from '@mui/material/Typography'
-import Modal from '@mui/material/Modal'
 import moment from 'moment'
-import Button from '@mui/material/Button'
 import DeleteIcon from '@mui/icons-material/Delete'
 import DoneIcon from '@mui/icons-material/Done'
+import { useDispatch } from 'react-redux'
+import { changeStatusOrder, deleteOrder } from '../../store/order'
 
 const style = {
   position: 'absolute',
@@ -22,23 +21,35 @@ const style = {
 }
 
 export default function BasicModal({ event }) {
-  const [open, setOpen] = React.useState(false)
+  const dispatch = useDispatch()
+  const { id } = event
+  const month = new Date(event.start).getMonth() + 1
+  const year = new Date(event.start).getFullYear()
+  const [open, setOpen] = useState(false)
   const handleOpen = () => setOpen(true)
-  const handleClose = () => setOpen(false)
-  const date = moment(event.event.start)
+
+  const handleClose = () => {
+    dispatch(changeStatusOrder({ id, month, year }))
+    setOpen(false)
+  }
+  const handleDelete = () => {
+    dispatch(deleteOrder({ id, month, year }))
+    setOpen(false)
+  }
+  const date = moment(event.start)
     .format('DD.MM.YYYY')
     .toString()
-  const timeStart = moment(event.event.start)
+  const timeStart = moment(event.start)
     .format('HH:mm')
     .toString()
-  const timeEnd = moment(event.event.end)
+  const timeEnd = moment(event.end)
     .format('HH:mm')
     .toString()
 
   return (
     <div>
       <span onClick={handleOpen} className="flex  justify-between flex-nowrap">
-        <strong> {event.event.title} </strong>
+        <strong> {event.name} </strong>
       </span>
       <Modal
         open={open}
@@ -60,11 +71,14 @@ export default function BasicModal({ event }) {
             {timeEnd}
           </Typography>
           <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-            Цель приёма: {event.event.diagnosis}
+            Цель приёма: {event.diagnosis}
+          </Typography>
+          <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+            Записал: {event.doctor}
           </Typography>
           <div className="flex flex-row justify-around mt-4">
             <Button
-              onClick={handleClose}
+              onClick={handleDelete}
               color="error"
               variant="contained"
               endIcon={<DeleteIcon />}
