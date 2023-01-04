@@ -6,7 +6,7 @@ import DialogContent from '@mui/material/DialogContent'
 import DialogTitle from '@mui/material/DialogTitle'
 import { Button, TextField, Checkbox, FormControlLabel } from '@mui/material'
 import { useDispatch, useSelector } from 'react-redux'
-import { clearAuthErrors, getAuthErrors, getIsRegistered } from '../../store/users'
+import { clearAuthErrors, getAuthErrors } from '../../store/users'
 
 import { toast } from 'react-toastify'
 
@@ -46,7 +46,6 @@ const OpenDialog = ({
     setIsAdmin(!admin)
   }
   const authErrors = useSelector(getAuthErrors())
-  const isRegistered = useSelector(getIsRegistered())
 
   if (authErrors) {
     errName =
@@ -87,8 +86,11 @@ const OpenDialog = ({
         open={dialogOpen}
         onClose={handleDialogClose}
         aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description">
-        <DialogTitle id="alert-dialog-title">{'Добавление нового сотрудника'}</DialogTitle>
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {'Добавление нового сотрудника'}
+        </DialogTitle>
         <DialogContent>
           <TextField
             autoFocus
@@ -130,12 +132,23 @@ const OpenDialog = ({
             onChange={handleChangePassword}
           />
           <FormControlLabel
-            control={<Checkbox checked={admin} name="isAdmin" onChange={handleChangeIsAdmin} />}
+            control={
+              <Checkbox
+                checked={admin}
+                name="isAdmin"
+                onChange={handleChangeIsAdmin}
+              />
+            }
             label="Администратор?"
           />
         </DialogContent>
         <DialogActions>
-          <Button color="primary" variant="contained" onClick={handleCreateNewUser} autoFocus>
+          <Button
+            color="primary"
+            variant="contained"
+            onClick={handleCreateNewUser}
+            autoFocus
+          >
             Создать
           </Button>
           <Button color="error" variant="contained" onClick={handleDialogClose}>

@@ -10,18 +10,18 @@ import { useDispatch, useSelector } from 'react-redux'
 import {
   deleteUser,
   getDataStatus,
-  getUserCurrentData,
   getUsersList,
   loadUsersList,
   signUp,
 } from '../../store/users'
 import { toast } from 'react-toastify'
+import UseColumns from '../../hooks/useColumns'
 
 export default function UsersList() {
   const rows = []
   const dispatch = useDispatch()
   const usersDataStatus = useSelector(getDataStatus())
-  const currentUser = useSelector(getUserCurrentData())
+
   const usersList = useSelector(getUsersList())
 
   const [pageSize, setPageSize] = useState(20)
@@ -72,6 +72,7 @@ export default function UsersList() {
         theme: 'colored',
       })
       setDialogOpen(false)
+      //window.location.reload()
     }
   }
 
@@ -116,71 +117,7 @@ export default function UsersList() {
     setOpen(true)
     return newRow
   }
-  const columns = [
-    {
-      field: 'id',
-      width: 50,
-      editable: false,
-      headerAlign: 'center',
-      align: 'center',
-      sortable: false,
-      filterable: false,
-      renderHeader: () => <strong>{'ID'}</strong>,
-      hide: true,
-    },
-    {
-      editable: false,
-      headerAlign: 'center',
-      align: 'center',
-      sortable: false,
-      filterable: false,
-      renderHeader: () => <strong>{'Логин'}</strong>,
-      field: 'login',
-      width: 120,
-    },
-    {
-      width: 500,
-      sortable: false,
-      editable: false,
-      headerAlign: 'center',
-      align: 'center',
-      renderHeader: () => <strong>{'ФИО'}</strong>,
-      field: 'fullName',
-    },
-
-    {
-      field: 'isAdmin',
-      renderHeader: () => <strong>{'Администратор'}</strong>,
-      type: 'boolean',
-      width: 140,
-      editable: false,
-      sortable: false,
-    },
-    {
-      field: 'more',
-      headerName: '',
-      sortable: false,
-      headerAlign: 'center',
-      width: 200,
-      isSecureContext,
-      align: 'center',
-      filterable: false,
-
-      renderCell: (params) => {
-        if (params.id !== currentUser._id) {
-          return (
-            <Button
-              color="error"
-              onClick={() => handleDialogDelete(params)}
-              variant="contained"
-            >
-              Удалить
-            </Button>
-          )
-        }
-      },
-    },
-  ]
+  const { columns } = UseColumns({ handleDialogDelete })
 
   return (
     <>

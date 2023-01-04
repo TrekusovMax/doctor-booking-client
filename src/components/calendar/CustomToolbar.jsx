@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+import React from 'react'
 
 import 'react-big-calendar/lib/css/react-big-calendar.css'
 const CustomToolbar = (props) => {
@@ -14,9 +14,9 @@ const CustomToolbar = (props) => {
   const goToDayView = () => {
     props.onView('day')
   }
-  const goToWeekView = () => {
+  /*  const goToWeekView = () => {
     props.onView('work_week')
-  }
+  } */
   const goToMonthView = () => {
     props.onView('month')
   }

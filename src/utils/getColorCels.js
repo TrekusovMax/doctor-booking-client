@@ -1,6 +1,5 @@
 import { isNull } from 'lodash'
 import moment from 'moment'
-import shallowEqual from 'shallowequal'
 import { capitalize } from './capitalize'
 const CURRENT_DATE = moment().toDate()
 

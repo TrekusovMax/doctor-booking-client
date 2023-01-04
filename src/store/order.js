@@ -6,21 +6,35 @@ const ordersSlice = createSlice({
   name: 'order',
   initialState: {
     orders: [],
+    order: {},
     isLoading: true,
     error: null,
     dataLoaded: false,
     date: { month: null, year: null },
+    orderTime: {},
   },
 
   reducers: {
     orderRequested: (state) => {
       state.isLoading = true
     },
+    orderClear: (state) => {
+      state.orders = []
+    },
     orderReceved: (state, action) => {
       isArray(action.payload)
         ? (state.orders = action.payload)
         : state.orders.push(action.payload)
-
+      state.isLoading = false
+      state.dataLoaded = true
+    },
+    orderRecevedOne: (state, action) => {
+      state.order = action.payload
+      state.isLoading = false
+      state.dataLoaded = true
+    },
+    orderRecevedAll: (state, action) => {
+      state.orders = action.payload
       state.isLoading = false
       state.dataLoaded = true
     },
@@ -39,24 +53,51 @@ const ordersSlice = createSlice({
     setOrderDate: (state, action) => {
       state.date = action.payload
     },
+    setOrderTime: (state, action) => {
+      state.orderTime = action.payload
+    },
   },
 })
 
 const { reducer: ordersReducer, actions } = ordersSlice
 const {
+  orderRecevedOne,
+  orderRecevedAll,
   orderRequested,
   orderReceved,
   orderRequestFiled,
   setOrderDate,
   orderStatusChanged,
   orderDeleted,
+  setOrderTime,
+  orderClear,
 } = actions
 
-export const getOrders = () => async (dispatch) => {
+export const clear = () => async (dispatch) => {
+  dispatch(orderClear())
+}
+
+export const getOrderById = (id) => async (dispatch) => {
+  dispatch(orderRequested())
+  try {
+    const content = await orderService.getById(id)
+    dispatch(orderRecevedOne(content))
+  } catch (error) {
+    dispatch(orderRequestFiled(error))
+  }
+}
+export const getAllOrders = () => async (dispatch) => {
   dispatch(orderRequested())
   try {
     const content = await orderService.getAll()
-    dispatch(orderReceved(content))
+    dispatch(orderRecevedAll(content))
+  } catch (error) {
+    dispatch(orderRequestFiled(error))
+  }
+}
+export const setTime = (payload) => async (dispatch) => {
+  try {
+    dispatch(setOrderTime(JSON.stringify(payload)))
   } catch (error) {
     dispatch(orderRequestFiled(error))
   }
@@ -96,6 +137,16 @@ export const deleteOrder = (payload) => async (dispatch) => {
     dispatch(orderRequestFiled(error))
   }
 }
+export const deleteOrderFromList = (payload) => async (dispatch) => {
+  dispatch(orderRequested())
+  try {
+    await orderService.deleteOrder(payload.id)
+    dispatch(orderDeleted())
+    dispatch(getAllOrders())
+  } catch (error) {
+    dispatch(orderRequestFiled(error))
+  }
+}
 export const changeStatusOrder = (payload) => async (dispatch) => {
   dispatch(orderRequested())
   try {
@@ -106,8 +157,22 @@ export const changeStatusOrder = (payload) => async (dispatch) => {
     dispatch(orderRequestFiled(error))
   }
 }
+export const changeStatusOrderFromList = (payload) => async (dispatch) => {
+  dispatch(orderRequested())
+  try {
+    await orderService.changeStatus(payload.id)
+    dispatch(orderStatusChanged())
+    dispatch(getAllOrders())
+  } catch (error) {
+    dispatch(orderRequestFiled(error))
+  }
+}
 
+export const getOneOrder = () => (state) => state.orders.order
 export const getOrdersList = () => (state) => state.orders.orders
 export const getCurrentMonth = () => (state) => state.orders.date
+export const getOrderTime = () => (state) => state.orders.orderTime
+export const getIsLoading = () => (state) => state.orders.isLoading
+export const getError = () => (state) => state.orders.error
 
 export default ordersReducer

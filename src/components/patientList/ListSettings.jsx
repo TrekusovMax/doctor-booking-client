@@ -1,7 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import Button from '@mui/material/Button'
-import { randomId } from '@mui/x-data-grid-generator'
+
 export const columns = [
   {
     field: 'id',
@@ -45,7 +45,7 @@ export const columns = [
     width: 300,
     headerAlign: 'center',
     align: 'center',
-    editable: true,
+    editable: false,
     type: 'singleSelect',
     valueOptions: ['Ожидает приёма', 'Завершено'],
   },
@@ -74,120 +74,5 @@ export const columns = [
         </Link>
       )
     },
-  },
-]
-
-export const rows = [
-  {
-    id: randomId(),
-    fullName: 'Иванов И.И.',
-    age: '25.08.1986',
-    phone: '+71234567890',
-    status: 'Ожидает приёма',
-    date: '22.08.2022',
-  },
-  {
-    id: randomId(),
-    fullName: 'Иванов И.И.',
-    age: '25.08.1986',
-    phone: '+71234567890',
-    status: 'Ожидает приёма',
-    date: '22.08.2022',
-  },
-  {
-    id: randomId(),
-    fullName: 'Иванов И.И.',
-    age: '25.08.1986',
-    phone: '+71234567890',
-    status: 'Ожидает приёма',
-    date: '22.08.2022',
-  },
-  {
-    id: randomId(),
-    fullName: 'Иванов И.И.',
-    age: '25.08.1986',
-    phone: '+71234567890',
-    status: 'Ожидает приёма',
-    date: '22.08.2022',
-  },
-  {
-    id: randomId(),
-    fullName: 'Иванов И.И.',
-    age: '25.08.1986',
-    phone: '+71234567890',
-    status: 'Ожидает приёма',
-    date: '22.08.2022',
-  },
-  {
-    id: randomId(),
-    fullName: 'Иванов И.И.',
-    age: '25.08.1986',
-    phone: '+71234567890',
-    status: 'Ожидает приёма',
-    date: '22.08.2022',
-  },
-  {
-    id: randomId(),
-    fullName: 'Иванов И.И.',
-    age: '25.08.1986',
-    phone: '+71234567890',
-    status: 'Ожидает приёма',
-    date: '22.08.2022',
-  },
-  {
-    id: randomId(),
-    fullName: 'Иванов И.И.',
-    age: '25.08.1986',
-    phone: '+71234567890',
-    status: 'Ожидает приёма',
-    date: '22.08.2022',
-  },
-  {
-    id: randomId(),
-    fullName: 'Иванов И.И.',
-    age: '25.08.1986',
-    phone: '+71234567890',
-    status: 'Ожидает приёма',
-    date: '22.08.2022',
-  },
-  {
-    id: randomId(),
-    fullName: 'Иванов И.И.',
-    age: '25.08.1986',
-    phone: '+71234567890',
-    status: 'Ожидает приёма',
-    date: '22.08.2022',
-  },
-  {
-    id: randomId(),
-    fullName: 'Иванов И.И.',
-    age: '25.08.1986',
-    phone: '+71234567890',
-    status: 'Ожидает приёма',
-    date: '22.08.2022',
-  },
-  {
-    id: randomId(),
-    fullName: 'Иванов И.И.',
-    age: '25.08.1986',
-    phone: '+71234567890',
-    status: 'Ожидает приёма',
-    date: '22.08.2022',
-  },
-  {
-    id: randomId(),
-    fullName: 'Иванов И.И.',
-    age: '25.08.1986',
-    phone: '+71234567890',
-    status: 'Ожидает приёма',
-    date: '22.08.2022',
-  },
-  {
-    id: randomId(),
-    fullName: 'Иванов И.И.',
-    age: '25.08.1986',
-    phone: '+71234567890',
-    status: 'Ожидает приёма',
-    date: '22.08.2022',
   },
 ]

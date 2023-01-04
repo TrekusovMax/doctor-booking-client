@@ -1,4 +1,4 @@
-import { createAction, createSlice } from '@reduxjs/toolkit'
+import { createSlice } from '@reduxjs/toolkit'
 import sheduleService from '../services/shedule.service'
 
 const sheduleSlice = createSlice({

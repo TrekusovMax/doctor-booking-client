@@ -1,36 +1,49 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Box from '@mui/material/Box'
 import Paper from '@mui/material/Paper'
 
-import { rows, columns } from './ListSettings'
+import { columns } from './ListSettings'
 import { DataGrid, ruRU } from '@mui/x-data-grid'
-import Snackbar from '@mui/material/Snackbar'
-import Alert from '@mui/material/Alert'
 import { Typography } from '@mui/material'
+import { useDispatch, useSelector } from 'react-redux'
+import { getIsLoading, getAllOrders, getOrdersList } from '../../store/order'
+import moment from 'moment'
 
 const PatientList = () => {
   const [pageSize, setPageSize] = useState(20)
-  const [tableData, setTableData] = useState(rows)
-  const [open, setOpen] = useState(false)
+  const [tableData, setTableData] = useState([] /* rows */)
 
-  const handleClose = (event, reason) => {
-    if (reason === 'clickaway') {
-      return
-    }
-    setOpen(false)
-  }
+  const dispatch = useDispatch()
+  const ordersList = useSelector(getOrdersList())
+  const isLoadingList = useSelector(getIsLoading())
 
-  const processRowUpdate = (newRow) => {
-    const newData = tableData.map((i) => (i.id === newRow.id ? newRow : i))
-    setTableData(newData)
-    setOpen(true)
-    return newRow
-  }
   const getCellClassName = (params) => {
     if (params.field === 'status') {
       return params.value === 'Завершено' ? 'done' : 'pending'
     }
   }
+
+  useEffect(() => {
+    dispatch(getAllOrders())
+  }, [])
+
+  useEffect(() => {
+    const patientList = []
+    //добавляем пациентов в список
+    ordersList.map((order) =>
+      patientList.push({
+        id: order.id,
+        fullName: order.name,
+        age: moment(order.dateOfBirth).format('DD.MM.YYYY'),
+        date: moment(order.start).format('DD.MM.YYYY'),
+        status: order.isOpen ? 'Ожидает приёма' : 'Завершено',
+        phone: order.phone,
+      }),
+      // }
+    )
+    setTableData(patientList)
+  }, [ordersList])
+
   return (
     <Box
       sx={{
@@ -55,30 +68,22 @@ const PatientList = () => {
         Список пациентов
       </Typography>
       <Paper elevation={3}>
-        <DataGrid
-          disableColumnSelector
-          localeText={ruRU.components.MuiDataGrid.defaultProps.localeText}
-          rows={tableData}
-          columns={columns}
-          disableSelectionOnClick
-          experimentalFeatures={{ newEditingApi: true }}
-          pageSize={pageSize}
-          onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
-          rowsPerPageOptions={[5, 10, 20]}
-          pagination
-          autoHeight
-          processRowUpdate={processRowUpdate}
-          getCellClassName={getCellClassName}
-        />
-        <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
-          <Alert
-            onClose={handleClose}
-            severity="success"
-            sx={{ width: '100%' }}
-          >
-            Данные пациента изменнены
-          </Alert>
-        </Snackbar>
+        {!isLoadingList && (
+          <DataGrid
+            disableColumnSelector
+            localeText={ruRU.components.MuiDataGrid.defaultProps.localeText}
+            rows={tableData}
+            columns={columns}
+            disableSelectionOnClick
+            experimentalFeatures={{ newEditingApi: true }}
+            pageSize={pageSize}
+            onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
+            rowsPerPageOptions={[5, 10, 20]}
+            pagination
+            autoHeight
+            getCellClassName={getCellClassName}
+          />
+        )}
       </Paper>
     </Box>
   )

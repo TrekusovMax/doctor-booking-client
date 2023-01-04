@@ -5,10 +5,13 @@ import React, {
   useState,
   useEffect,
 } from 'react'
+
 import { Calendar, momentLocalizer, Views } from 'react-big-calendar'
-import CustomToolbar from './CustomToolbar '
+import CustomToolbar from './CustomToolbar'
+import { Modal } from '@mui/material'
 import BasicModal from './Modal'
 import moment from 'moment'
+import UseCalendar from '../../hooks/useWorkTime'
 
 import 'react-big-calendar/lib/css/react-big-calendar.css'
 import 'moment-timezone'
@@ -22,26 +25,20 @@ import {
   getShedule,
 } from '../../store/shedule'
 import { capitalize } from '../../utils/capitalize'
-
+import { getUserCurrentData } from '../../store/users'
 import { getColorCels } from '../../utils/getColorCels'
 import { setWorkTime } from './functions'
 import PatientOrderModal from './patientOrderModal'
-import {
-  getCurrentMonth,
-  getOrdersList,
-  getOrdersOnMonth,
-  setCurrentMonth,
-} from '../../store/order'
+import { getOrdersOnMonth, setCurrentMonth } from '../../store/order'
+import UseOrderList from '../../hooks/useOrderList'
 
 const IndexCalendar = () => {
   const dispatch = useDispatch()
-
-  const [myEvents, setEvents] = useState([])
-  const ordersList = useSelector(getOrdersList())
+  const currentUser = useSelector(getUserCurrentData())
+  const { ordersList } = UseOrderList()
   const date_from = useSelector(getDateFrom())
   const date_to = useSelector(getDateTo())
   const sheduleDays = useSelector(getDays())
-  const getMonth = useSelector(getCurrentMonth())
 
   const [view, setView] = useState(Views.MONTH)
   const [date, setDate] = useState(new Date())
@@ -57,30 +54,36 @@ const IndexCalendar = () => {
 
   const [receiptTime, setReceiptTime] = useState(5)
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false)
+
   const [orderTime, setOrderTime] = useState({
     start: moment().toDate(),
     end: moment().toDate(),
   })
+  //Установка выходных дней
+  const daysOfWeek = []
+  const allowedDays = {}
+  const localizer = momentLocalizer(moment)
+
+  //получение текущего месяца и года
+  const month = new Date(date).getMonth() + 1
+  const year = new Date(date).getFullYear()
 
   const onView = (newView) => setView(newView)
+
   const onNavigate = (newDate) => {
     setWorkTime(sheduleDays, newDate, setStartDay, setEndDay, setReceiptTime)
     setDate(newDate)
   }
-
-  const month = new Date(date).getMonth() + 1
-  const year = new Date(date).getFullYear()
-
   useEffect(() => {
     dispatch(setCurrentMonth(month, year))
     dispatch(getOrdersOnMonth(month, year))
   }, [month, year])
 
-  const localizer = momentLocalizer(moment)
+  //получение расписания
+  useEffect(() => {
+    dispatch(getShedule())
+  }, [])
 
-  //Установка выходных дней
-  const daysOfWeek = []
-  const allowedDays = {}
   sheduleDays &&
     sheduleDays.map((item) => daysOfWeek.push(...Object.keys(item)))
   sheduleDays &&
@@ -88,21 +91,7 @@ const IndexCalendar = () => {
       (day, i) => (allowedDays[daysOfWeek[i]] = day[daysOfWeek[i]].enabled),
     )
 
-  useEffect(() => {
-    dispatch(getShedule())
-    // dispatch(getOrders())
-  }, [])
-  useEffect(() => {
-    const newList = ordersList.map((item) => {
-      return {
-        ...item,
-        start: moment(item.start).toDate(),
-        end: moment(item.end).toDate(),
-      }
-    })
-    setEvents(newList)
-  }, [ordersList])
-
+  //нажатие на ячейку
   const handleSelectSlot = ({ start, end }) => {
     setWorkTime(sheduleDays, start, setStartDay, setEndDay, setReceiptTime)
 
@@ -146,13 +135,14 @@ const IndexCalendar = () => {
     }
   }
 
-  const onSelecting = useCallback((range) => {
+  const onSelecting = useCallback(() => {
     return false
   }, [])
 
   //Настройка внешнего вида события
   const CustomEvent = ({ event }) => {
-    return <BasicModal event={event} />
+    if (currentUser && currentUser.isAdmin) return <BasicModal event={event} />
+    return
   }
 
   //Форматы дат
@@ -177,35 +167,15 @@ const IndexCalendar = () => {
     },
   })
 
-  // Время начала рабочего дня
-  const min = new Date(
-    moment()
-      .toDate()
-      .getFullYear(),
-    moment()
-      .toDate()
-      .getMonth(),
-    moment()
-      .toDate()
-      .getDate(),
-    startDay.hours,
-    startDay.minutes,
-  )
-
   // Время окончания рабочего дня
-  const max = new Date(
-    moment()
-      .toDate()
-      .getFullYear(),
-    moment()
-      .toDate()
-      .getMonth(),
-    moment()
-      .toDate()
-      .getDate(),
-    endDay.hours,
-    endDay.minutes,
-  )
+  const { min, max } = useMemo(() => UseCalendar(startDay, endDay), [date])
+
+  const OrderModal = React.forwardRef(() => (
+    <PatientOrderModal
+      setIsOrderModalOpen={setIsOrderModalOpen}
+      orderTime={orderTime}
+    />
+  ))
 
   return (
     <>
@@ -217,14 +187,13 @@ const IndexCalendar = () => {
         date={date}
         view={view}
         defaultView={view}
-        events={myEvents}
+        events={ordersList}
         style={{ height: '100vh' }}
         onView={onView}
         onNavigate={onNavigate}
-        views={['month', 'day' /* , 'work_week' */]}
+        views={['month', 'day']}
         selectable
         onSelectSlot={handleSelectSlot} //запись события
-        //onSelectEvent={handleSelectEvent}
         components={{
           dateCellWrapper: ColoredDateCellWrapper,
           toolbar: CustomToolbar,
@@ -237,12 +206,9 @@ const IndexCalendar = () => {
         onSelecting={onSelecting}
         dayPropGetter={dayPropGetter}
       />
-      <PatientOrderModal
-        isOpen={isOrderModalOpen}
-        setIsOrderModalOpen={setIsOrderModalOpen}
-        setEvents={setEvents}
-        orderTime={orderTime}
-      />
+      <Modal open={isOrderModalOpen} onClose={() => setIsOrderModalOpen(false)}>
+        <OrderModal />
+      </Modal>
     </>
   )
 }

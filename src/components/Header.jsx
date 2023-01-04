@@ -9,11 +9,17 @@ import RemoveRedEyeRoundedIcon from '@mui/icons-material/RemoveRedEyeRounded'
 import { Link, useNavigate } from 'react-router-dom'
 import localStorageService from '../services/localStorage.service'
 import { useSelector } from 'react-redux'
-import { getUserCurrentData } from '../store/users'
+import { getAuthErrors, getUserCurrentData } from '../store/users'
 export default function Header() {
   const navigate = useNavigate()
+  const errors = useSelector(getAuthErrors())
+  if (errors) {
+    localStorageService.removeAuthData()
+    window.location.replace('/login')
+  }
   const currentUser = useSelector(getUserCurrentData())
   const currentUserId = localStorageService.getAccessToken()
+
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static">

@@ -41,6 +41,10 @@ const usersSlice = createSlice({
       state.error = action.payload
       state.isLoading = false
     },
+    authAddedNewUser: (state, action) => {
+      state.isLoggedIn = true
+      state.isRegistered = true
+    },
     authRequestSuccess: (state, action) => {
       state.auth = { ...action.payload }
       state.isLoggedIn = true
@@ -77,13 +81,11 @@ const {
   authRequestSuccess,
   authRequestFailed,
   userLoggedOut,
-  userUpdateSuccessed,
   userDeleteSuccessed,
+  authAddedNewUser,
 } = actions
 
 const authRequested = createAction('users/authRequested')
-const userUpdateRequested = createAction('users/userUpdateRequested')
-const userUpdateFailed = createAction('users/userUpdateFailed')
 
 export const loadUsersList = () => async (dispatch) => {
   dispatch(usersRequested())
@@ -106,10 +108,6 @@ export const deleteUser = (id) => async (dispatch) => {
   } catch (error) {
     dispatch(usersRequestFiled(error))
   }
-}
-
-export const updateUser = (payload) => async (dispatch) => {
-  dispatch(userUpdateRequested())
 }
 
 export const login = (payload) => async (dispatch) => {
@@ -137,7 +135,7 @@ export const signUp = (payload) => async (dispatch) => {
   dispatch(authRequested())
   try {
     const data = await authService.register(payload)
-    dispatch(authRequestSuccess({ userId: data.userId, isRegistered: true }))
+    dispatch(authAddedNewUser())
     return data
   } catch (error) {
     dispatch(authRequestFailed(error.response.data.error))

@@ -2,11 +2,10 @@ import React, { useState } from 'react'
 import { Paper, Button, TextField, Typography } from '@mui/material'
 import { useForm } from 'react-hook-form'
 import styles from './Login.module.css'
-import { useDispatch, useSelector } from 'react-redux'
-import { getAuthErrors, login } from '../../store/users'
+import { useDispatch } from 'react-redux'
+import { login } from '../../store/users'
 import { toast } from 'react-toastify'
 import { useNavigate } from 'react-router-dom'
-import localStorageService from '../../services/localStorage.service'
 
 export const Login = () => {
   const navigate = useNavigate()
@@ -23,12 +22,11 @@ export const Login = () => {
   const {
     register,
     handleSubmit,
-    setError,
-    formState: { errors, isValid },
+    formState: { errors },
   } = useForm({
     defaultValues: data,
   })
-  const loginError = useSelector(getAuthErrors())
+
   const dispatch = useDispatch()
 
   const onSubmit = async () => {

@@ -22,18 +22,25 @@ const style = {
 
 export default function BasicModal({ event }) {
   const dispatch = useDispatch()
+
   const { id } = event
   const month = new Date(event.start).getMonth() + 1
   const year = new Date(event.start).getFullYear()
+
   const [open, setOpen] = useState(false)
   const handleOpen = () => setOpen(true)
-
   const handleClose = () => {
-    dispatch(changeStatusOrder({ id, month, year }))
+    const conf = window.confirm('Вы действительно хотите закрыть запись?')
+    if (conf) {
+      dispatch(changeStatusOrder({ id, month, year }))
+    }
     setOpen(false)
   }
   const handleDelete = () => {
-    dispatch(deleteOrder({ id, month, year }))
+    const conf = window.confirm('Вы действительно хотите удалить запись?')
+    if (conf) {
+      dispatch(deleteOrder({ id, month, year }))
+    }
     setOpen(false)
   }
   const date = moment(event.start)
@@ -53,7 +60,7 @@ export default function BasicModal({ event }) {
       </span>
       <Modal
         open={open}
-        onClose={handleClose}
+        onClose={() => setOpen(false)}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >

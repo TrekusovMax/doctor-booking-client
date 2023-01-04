@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react'
-import dayjs from 'dayjs'
 import SheduleDay from './SheduleDay'
-import { Settings, initState } from './Settings'
+import { initState } from './Settings'
 import { Box, Typography, Stack, Button, Paper } from '@mui/material'
 
 import DateInput from './DateInput'
@@ -28,7 +27,6 @@ const SheduleList = () => {
   const dateTo = useSelector(getDateTo())
   const sheduleIsLoading = useSelector(getIsLoading())
 
-  const { days } = Settings
   const [shedule, setShedule] = useState(initState)
   const [actualDays, setActualDays] = useState({})
   const [dateError, setDateError] = useState(false)

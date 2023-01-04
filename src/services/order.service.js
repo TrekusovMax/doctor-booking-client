@@ -1,5 +1,3 @@
-import axios from 'axios'
-import config from '../config.json'
 import httpService from './http.service'
 
 const userEndpoint = 'order/'
@@ -7,6 +5,10 @@ const userEndpoint = 'order/'
 const orderService = {
   getAll: async () => {
     const { data } = await httpService.get(userEndpoint + 'getAllOrders')
+    return data
+  },
+  getById: async (id) => {
+    const { data } = await httpService.get(userEndpoint + 'getOrderById/' + id)
     return data
   },
   getOnMonth: async (month, year) => {
