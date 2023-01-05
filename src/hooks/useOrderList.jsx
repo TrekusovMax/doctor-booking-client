@@ -1,15 +1,18 @@
 import moment from 'moment'
 import { useSelector } from 'react-redux'
-import { getOrdersList } from '../store/order'
+import { getIsLoading, getOrdersList } from '../store/order'
 
 const UseOrderList = () => {
   let ordersList = useSelector(getOrdersList())
+  const isLoadingData = useSelector(getIsLoading())
   ordersList = ordersList.map((item) => {
-    return {
-      ...item,
-      start: moment(item.start).toDate(),
-      end: moment(item.end).toDate(),
-    }
+    return (
+      !isLoadingData && {
+        ...item,
+        start: moment(item.start).toDate(),
+        end: moment(item.end).toDate(),
+      }
+    )
   })
   return { ordersList }
 }

@@ -1,4 +1,4 @@
-import React, { useState, useTransition } from 'react'
+import React, { useState } from 'react'
 
 import Dialog from '@mui/material/Dialog'
 import DialogActions from '@mui/material/DialogActions'
@@ -7,45 +7,57 @@ import DialogTitle from '@mui/material/DialogTitle'
 import { Button, TextField, Checkbox, FormControlLabel } from '@mui/material'
 import { useDispatch, useSelector } from 'react-redux'
 import { clearAuthErrors, getAuthErrors } from '../../store/users'
-
+import { loadUsersList, signUp } from '../../store/users'
 import { toast } from 'react-toastify'
 
-const OpenDialog = ({
-  dialogOpen,
-  handleDialogClose,
-  setLogin,
-  setPassword,
-  setName,
-  setIsAdmin,
-  handleCreateNewUser,
-}) => {
+const OpenDialog = ({ dialogOpen, setDialogOpen }) => {
   const dispatch = useDispatch()
-  const [admin, setAdmin] = useState(false)
-  const [isPending, startTransition] = useTransition()
+  const [login, setLogin] = useState('')
+  const [password, setPassword] = useState('')
+  const [name, setName] = useState('')
+  const [isAdmin, setIsAdmin] = useState(false)
+  const [adminCheckBox, setAdminCheckBox] = useState(false)
   let errName = ''
   let errLogin = ''
   let errPassword = ''
+  const authErrors = useSelector(getAuthErrors())
+  const handleCreateNewUser = async () => {
+    const data = {
+      name,
+      login,
+      password,
+      isAdmin,
+    }
+    const res = await dispatch(signUp(data))
+    await dispatch(loadUsersList())
+
+    if (res) {
+      toast.success('Добавлен новый сотрудник', {
+        position: 'top-center',
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        progress: undefined,
+        theme: 'colored',
+      })
+      setDialogOpen(false)
+      //window.location.reload()
+    }
+  }
 
   const handleChangeName = (event) => {
-    startTransition(() => {
-      setName(event.target.value)
-    })
+    setName(event.target.value)
   }
   const handleChangePassword = (event) => {
-    startTransition(() => {
-      setPassword(event.target.value)
-    })
+    setPassword(event.target.value)
   }
   const handleChangeLogin = (event) => {
-    startTransition(() => {
-      setLogin(event.target.value)
-    })
+    setLogin(event.target.value)
   }
   const handleChangeIsAdmin = () => {
-    setAdmin((prev) => !prev)
-    setIsAdmin(!admin)
+    setAdminCheckBox((prev) => !prev)
+    setIsAdmin(!adminCheckBox)
   }
-  const authErrors = useSelector(getAuthErrors())
 
   if (authErrors) {
     errName =
@@ -84,7 +96,7 @@ const OpenDialog = ({
     <div>
       <Dialog
         open={dialogOpen}
-        onClose={handleDialogClose}
+        onClose={() => setDialogOpen(false)}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
@@ -134,7 +146,7 @@ const OpenDialog = ({
           <FormControlLabel
             control={
               <Checkbox
-                checked={admin}
+                checked={adminCheckBox}
                 name="isAdmin"
                 onChange={handleChangeIsAdmin}
               />
@@ -151,7 +163,11 @@ const OpenDialog = ({
           >
             Создать
           </Button>
-          <Button color="error" variant="contained" onClick={handleDialogClose}>
+          <Button
+            color="error"
+            variant="contained"
+            onClick={() => setDialogOpen(false)}
+          >
             Отмена
           </Button>
         </DialogActions>

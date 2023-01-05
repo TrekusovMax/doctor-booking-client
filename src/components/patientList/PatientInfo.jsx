@@ -69,14 +69,17 @@ const PatientInfo = () => {
             </Typography>
             <Typography sx={{ my: 2, ml: 5 }} variant="h5" gutterBottom>
               {'Время посещения: '}
-
-              {`c ${moment(order.start).format('hh:mm')} 
-            до  ${moment(order.end).format('hh:mm')} `}
+              {`c ${moment(order.start).format('LT')} 
+            до  ${moment(order.end).format('LT')} `}
             </Typography>
             <Divider />
             <Typography sx={{ my: 2, ml: 5 }} variant="h5" gutterBottom>
               {'Направивший врач: '}
               {order.doctor}
+            </Typography>
+            <Typography sx={{ my: 2, ml: 5 }} variant="h5" gutterBottom>
+              {'Время и дата записи: '}
+              {moment(order.createdAt).format('DD.MM.YYYY в LT')}
             </Typography>
             <Typography sx={{ my: 2, ml: 5 }} variant="h5" gutterBottom>
               {'Цель посещения: '}

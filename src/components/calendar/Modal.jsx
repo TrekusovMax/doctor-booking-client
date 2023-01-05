@@ -81,7 +81,8 @@ export default function BasicModal({ event }) {
             Цель приёма: {event.diagnosis}
           </Typography>
           <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-            Записал: {event.doctor}
+            Записал: {event.doctor}{' '}
+            {moment(event.createdAt).format('DD.MM.YYYY в LT')}
           </Typography>
           <div className="flex flex-row justify-around mt-4">
             <Button

@@ -7,13 +7,7 @@ import StyledBox from './StyledBox'
 
 import OpenDialog from './OpenDialog'
 import { useDispatch, useSelector } from 'react-redux'
-import {
-  deleteUser,
-  getDataStatus,
-  getUsersList,
-  loadUsersList,
-  signUp,
-} from '../../store/users'
+import { deleteUser, getDataStatus, getUsersList } from '../../store/users'
 import { toast } from 'react-toastify'
 import UseColumns from '../../hooks/useColumns'
 
@@ -28,10 +22,7 @@ export default function UsersList() {
   const [tableData, setTableData] = useState([])
 
   const [open, setOpen] = useState(false)
-  const [login, setLogin] = useState('')
-  const [password, setPassword] = useState('')
-  const [name, setName] = useState('')
-  const [isAdmin, setIsAdmin] = useState(false)
+
   const [dialogOpen, setDialogOpen] = useState(false)
   const [isDeletedUser, setIsDeletedUser] = useState(false)
 
@@ -48,37 +39,6 @@ export default function UsersList() {
     setTableData(rows)
     setIsDeletedUser(false)
   }, [usersDataStatus, dialogOpen, isDeletedUser])
-
-  const handleDialogClose = () => {
-    setDialogOpen(false)
-  }
-  const handleCreateNewUser = async () => {
-    const data = {
-      name,
-      login,
-      password,
-      isAdmin,
-    }
-    const res = await dispatch(signUp(data))
-    await dispatch(loadUsersList())
-
-    if (res) {
-      toast.success('Добавлен новый сотрудник', {
-        position: 'top-center',
-        autoClose: 3000,
-        hideProgressBar: true,
-        closeOnClick: true,
-        progress: undefined,
-        theme: 'colored',
-      })
-      setDialogOpen(false)
-      //window.location.reload()
-    }
-  }
-
-  const handleAddNewUser = () => {
-    setDialogOpen(true)
-  }
 
   const handleClose = (event, reason) => {
     if (reason === 'clickaway') {
@@ -126,7 +86,7 @@ export default function UsersList() {
       </Typography>
       <StyledBox sx={{ marginX: 'auto' }}>
         <Button
-          onClick={handleAddNewUser}
+          onClick={() => setDialogOpen(true)}
           sx={{ marginY: 2 }}
           color="primary"
           variant="contained"
@@ -164,15 +124,7 @@ export default function UsersList() {
           </Alert>
         </Snackbar>
       </StyledBox>
-      <OpenDialog
-        dialogOpen={dialogOpen}
-        handleDialogClose={handleDialogClose}
-        setLogin={setLogin}
-        setPassword={setPassword}
-        setName={setName}
-        setIsAdmin={setIsAdmin}
-        handleCreateNewUser={handleCreateNewUser}
-      />
+      <OpenDialog dialogOpen={dialogOpen} setDialogOpen={setDialogOpen} />
     </>
   )
 }
