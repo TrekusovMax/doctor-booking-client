@@ -14,8 +14,8 @@ export default function Header() {
   const navigate = useNavigate()
   const errors = useSelector(getAuthErrors())
   if (errors) {
-    //localStorageService.removeAuthData()
-    // window.location.replace('/login')
+    localStorageService.removeAuthData()
+    window.location.replace('/login')
   }
   const currentUser = useSelector(getUserCurrentData())
   const currentUserId = localStorageService.getAccessToken()
