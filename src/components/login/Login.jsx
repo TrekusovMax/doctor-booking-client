@@ -10,8 +10,8 @@ import { useNavigate } from 'react-router-dom'
 export const Login = () => {
   const navigate = useNavigate()
   const [data, setData] = useState({
-    login: 'admin',
-    password: '12345678',
+    login: '',
+    password: '',
   })
   const handleChange = (event) => {
     setData((prevState) => ({
